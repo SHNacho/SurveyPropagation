@@ -1,0 +1,107 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/main.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/variable.o",
+      "src/variable.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/variable.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/variable.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/function.o",
+      "src/function.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/function.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/function.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/edge.o",
+      "src/edge.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/edge.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/edge.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/graph.o",
+      "src/graph.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/graph.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/graph.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/SP.o",
+      "src/SP.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/SP.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/SP.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++11",
+      "-g",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/random.o",
+      "src/random.cpp"
+    ],
+    "directory": "/home/nacho/Desktop/SurveyPropagation",
+    "file": "/home/nacho/Desktop/SurveyPropagation/src/random.cpp",
+    "output": "/home/nacho/Desktop/SurveyPropagation/obj/random.o"
+  }
+]
