@@ -1,20 +1,19 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <iterator>
 #include "SP.h"
 #include "graph.h"
 #include "random.h"
 
+using namespace std;
+
 bool surveyPropagation(Graph* graph, int t_max, float precision){
 	bool unconverged = false;
 
-	vector<Edge*> edges = graph->getEdges();
-	
 	auto rng = std::default_random_engine {};
 
-	for(Edge* e : edges){
-		e->setSurvey(Randfloat(0.0, 1.0));
-	}
+	vector<Edge*> edges = graph->getEdges();
 
 	bool next = false;
 	int t;
@@ -61,4 +60,50 @@ double SP_UPDATE(Edge* edge){
 
 
 	return survey;
+}
+
+void unitPropagation(Graph* graph){
+
+}
+
+vector<bool> SID(Graph* graph, int t_max, float precision){
+	vector<Edge*> edges = graph->getEdges();
+	vector<Variable*> variables = graph->getVariables();
+
+	for(Edge* e : edges){
+		e->setSurvey(Randfloat(0.0, 1.0));
+	}
+
+	while(true){
+		bool converge = surveyPropagation(graph, t_max, precision);
+
+		bool trivial = true;
+
+		for(Edge* e : edges){
+			if (e->getSurvey() != 0.00)
+				trivial = true;
+		}
+
+		// Si hay "surveys" que no sean triviales
+		double max_bias = 0.0;
+		double pos_max_bias = 0;
+		if(trivial == false){
+			for(int i = 0; i < variables.size(); ++i){
+				double bias = variables[i]->calculateBias();
+				if(abs(bias) > max_bias){
+					max_bias = abs(bias);
+					pos_max_bias = i;
+				}
+			}
+
+			variables[pos_max_bias]->fix();
+
+			graph->clean();
+		}
+		else{
+			//walksat()
+		}
+
+		unitPropagation(graph);
+	}
 }

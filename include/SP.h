@@ -8,7 +8,6 @@
 
 bool surveyPropagation(Graph grafo, int t_max, float precision);
 
-// TODO
 double SP_UPDATE(Edge* edge);
 
 #endif //SP_H

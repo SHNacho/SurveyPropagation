@@ -20,9 +20,16 @@ class Variable
 		// la variable NO aparece negada
 		vector<Edge*> negativeNeighborhood;
 
+		// Productos para SP-UPDATE
 		double ps;
 		double pu;
 		double p0;
+
+		// Sesgos
+		double negativeBias;
+		double positiveBias;
+		double nullBias;
+		// Productos para el cálculo de los sesgos 
 
 	public:
 		//TODO
@@ -38,11 +45,21 @@ class Variable
 		//TODO
 		double getP0();
 		//TODO
+		double getPosBias();
+		//TODO
+		double getNegBias();
+		//TODO
+		double getNullBias();
+		//TODO
 		void setPs(double ps);
 		//TODO
 		void setPu(double pu);
 		//TODO
 		void setP0(double p0);
+		//TODO: Devuelve la resta entre bias positivo y negativo
+		double calculateBias();
+		//TODO
+		void fix();
 
 };
 

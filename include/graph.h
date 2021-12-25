@@ -23,6 +23,10 @@ class Graph
 	public:
 		// TODO
 		vector<Edge*> getEdges();
+		// TODO
+		vector<Variable*> getVariables();
+		// TODO
+		void clean();
 };
 
 # endif //GRAPH_H
