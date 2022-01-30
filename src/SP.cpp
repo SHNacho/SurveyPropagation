@@ -6,6 +6,7 @@
 #include "graph.h"
 #include "random.h"
 
+
 using namespace std;
 
 bool surveyPropagation(Graph* graph, int t_max, float precision){

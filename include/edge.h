@@ -6,6 +6,7 @@
 
 class Variable;
 class Function;
+
 class Edge
 {
 	private:
@@ -16,13 +17,9 @@ class Edge
 		double survey;
 
 	public:
-		// TODO
 		void setSurvey(double survey);
-		// TODO
 		const double getSurvey();
-		// TODO
 		Variable* getVariable();
-		// TODO
 		Function* getFunction();
 		// TODO
 		void calculateProducts();
