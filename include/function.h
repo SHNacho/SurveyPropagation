@@ -18,7 +18,6 @@ class Function
 		vector<Edge*> neighborhood;
 
 	public:
-		// TODO
 		vector<Edge*> getNeighborhood();
 };
 

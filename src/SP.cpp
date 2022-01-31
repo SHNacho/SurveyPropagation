@@ -20,7 +20,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 	int t;
 	for(t = 1; t <= t_max && !next; ++t){
 		// Contador para contar el número de aristas que han
-		// alcanzado al precisión deseada
+		// alcanzado la precisión deseada
 		int counter = 0;
 		// Recorremos las aristas de manera aleatoria
 		shuffle(std::begin(edges), std::end(edges), rng);

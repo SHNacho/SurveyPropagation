@@ -13,12 +13,13 @@ class Variable
 		int id; 
 		bool value;
 		// Conjunto de nodos vecinos (nodos función)
+		// se identifican por su arista
 		vector<Edge*> neighborhood;
 		// Subconjunto de nodos del vecindario en los que 
-		// la variable aparece negada
+		// la variable NO aparece negada
 		vector<Edge*> positiveNeighborhood;
 		// Subconjunto de nodos del vecindario en los que 
-		// la variable NO aparece negada
+		// la variable aparece negada
 		vector<Edge*> negativeNeighborhood;
 
 		// Productos para SP-UPDATE
