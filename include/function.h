@@ -18,6 +18,7 @@ class Function
 		vector<Edge*> neighborhood;
 
 	public:
+		Function(int id);
 		vector<Edge*> getNeighborhood();
 };
 

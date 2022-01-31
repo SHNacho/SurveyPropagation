@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 #include "variable.h"
 #include "edge.h"
 #include "function.h"
@@ -21,12 +22,11 @@ class Graph
 		vector<Variable*> variables;
 		vector<Function*> functions;
 	public:
+		Graph(string file);
+		vector<Edge*> getEdges(){return edges;}
+		vector<Variable*> getVariables(){return variables;}
 		// TODO
-		vector<Edge*> getEdges();
-		// TODO
-		vector<Variable*> getVariables();
-		// TODO
-		void clean();
+		void clean(){}
 };
 
 # endif //GRAPH_H

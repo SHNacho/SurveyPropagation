@@ -31,37 +31,27 @@ class Variable
 		double negativeBias;
 		double positiveBias;
 		double nullBias;
+
 		// Productos para el cálculo de los sesgos 
 
 	public:
-		//TODO
+		Variable(int id, bool value);
 		vector<Edge*> getNeighborhood();
-		//TODO
 		vector<Edge*> getPosNeighborhood();
-		//TODO
 		vector<Edge*> getNegNeighborhood();
-		//TODO
-		double getPs();
-		//TODO
-		double getPu();
-		//TODO
-		double getP0();
-		//TODO
-		double getPosBias();
-		//TODO
-		double getNegBias();
-		//TODO
-		double getNullBias();
-		//TODO
+		double getPs(){return ps;}
+		double getPu(){return pu;}
+		double getP0(){return p0;}
+		double getPosBias(){return positiveBias;}
+		double getNegBias(){return negativeBias;}
+		double getNullBias(){return nullBias;}
 		void setPs(double ps);
-		//TODO
 		void setPu(double pu);
-		//TODO
 		void setP0(double p0);
 		//TODO: Devuelve la resta entre bias positivo y negativo
 		double calculateBias();
 		//TODO
-		void fix();
+		void fix(){}
 
 };
 

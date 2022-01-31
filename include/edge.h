@@ -17,6 +17,7 @@ class Edge
 		double survey;
 
 	public:
+		Edge(Variable* variable, Function* function);
 		void setSurvey(double survey);
 		const double getSurvey();
 		const bool isNegated();
