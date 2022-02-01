@@ -59,10 +59,13 @@ Graph::Graph(string file){
 			bool neg = true;
 			
 			ifs >> var;
-			if(var > 0)
+			if(var > 0){
 				neg = false;
-			
-			edges.push_back(new Edge(variables[var - 1], functions[i], neg));	
+			}
+				
+			int var_pos = abs(var) - 1;
+
+			addEdge(variables[var_pos], functions[i], neg);
 		}	
 
 		ifs >> var;
@@ -70,22 +73,30 @@ Graph::Graph(string file){
 
 	ifs.close();
 
-	cout << "variables size: " << variables.size() << "\nfunctions size: " 
-		 << functions.size() << "\nedges size: " << edges.size() 
-		 << endl;
+	cout << "Número de nodos variable: " << variables.size() << endl
+		 << "Número de nodos cláusula: " << functions.size()  << endl
+		 << "Número de aristas:        " << edges.size() << endl;
+}
+
+//----------------------------------------------//
+void Graph::addEdge(Variable* var, Function* func, bool neg){
+	Edge edge(var, func, neg);
+	edges.push_back(&edge);
+	var->addNeighbor(&edge);
+	func->addNeighbor(&edge);
 }
 
 //----------------------------------------------//
 void Graph::initVariables(int n_variables){
 	for(int i = 1; i <= n_variables; ++i){
-		variables.push_back(new Variable(i));
+		this->variables.push_back(new Variable(i));
 	}
 }
 
 //----------------------------------------------//
 void Graph::initFunctions(int n_functions){
 	for(int i = 0; i < n_functions; ++i){
-		functions.push_back(new Function(i));
+		this->functions.push_back(new Function(i));
 	}
 }
 
