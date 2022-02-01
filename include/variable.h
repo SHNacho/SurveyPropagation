@@ -35,7 +35,7 @@ class Variable
 		// Productos para el cálculo de los sesgos 
 
 	public:
-		Variable(int id, bool value);
+		Variable(int id);
 		vector<Edge*> getNeighborhood();
 		vector<Edge*> getPosNeighborhood();
 		vector<Edge*> getNegNeighborhood();

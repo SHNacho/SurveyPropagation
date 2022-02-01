@@ -1,6 +1,10 @@
 #include "variable.h"
 
 
+Variable::Variable(int id){
+	this->id = id;
+}
+
 vector<Edge*> Variable::getNeighborhood(){
 	return neighborhood;
 }

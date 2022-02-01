@@ -2,6 +2,13 @@
 #include "variable.h"
 #include "function.h"
 
+Edge::Edge(Variable* variable, Function* function, bool negated){
+	this->variable = variable;
+	this->function = function;
+	this->negated = negated;
+	this->survey = 0.0;
+}
+
 void Edge::setSurvey(double survey){
 	this->survey = survey;
 }

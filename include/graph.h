@@ -21,12 +21,17 @@ class Graph
 		vector<Edge*> edges;
 		vector<Variable*> variables;
 		vector<Function*> functions;
+
 	public:
 		Graph(string file);
 		vector<Edge*> getEdges(){return edges;}
 		vector<Variable*> getVariables(){return variables;}
 		// TODO
 		void clean(){}
+	
+	private:
+		void initVariables(int n_variables);
+		void initFunctions(int n_functions);
 };
 
 # endif //GRAPH_H
