@@ -1,4 +1,5 @@
 #include "variable.h"
+#include "edge.h"
 
 
 Variable::Variable(int id){
@@ -27,6 +28,15 @@ void Variable::setPs(double ps){
 
 void Variable::setPu(double pu){
 	this->pu = pu;
+}
+
+void Variable::addNeighbor(Edge* neigh){
+	this->neighborhood.push_back(neigh);
+	
+	if(neigh->isNegated())
+		this->negativeNeighborhood.push_back(neigh);
+	else
+		this->positiveNeighborhood.push_back(neigh);
 }
 
 // TODO

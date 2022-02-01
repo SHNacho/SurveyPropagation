@@ -48,6 +48,7 @@ class Variable
 		void setPs(double ps);
 		void setPu(double pu);
 		void setP0(double p0);
+		void addNeighbor (Edge* neigh);
 		//TODO: Devuelve la resta entre bias positivo y negativo
 		double calculateBias();
 		//TODO

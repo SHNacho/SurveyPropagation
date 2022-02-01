@@ -20,6 +20,7 @@ class Function
 	public:
 		Function(int id);
 		vector<Edge*> getNeighborhood();
+		void addNeighbor(Edge* neigh);
 };
 
 #endif //FUNCTION_H
