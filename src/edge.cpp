@@ -8,7 +8,6 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->function = function;
 	this->negated = negated;
 	this->survey = Randfloat(0.0000, 1.0000);
-	cout << survey << endl;
 }
 
 Edge::~Edge(){
