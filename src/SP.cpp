@@ -45,6 +45,8 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 
 double SP_UPDATE(Edge* edge){
 	double survey = 1.0000;
+	// TODO: habría que eliminar los vecinos de las funciones que
+	// 		 ya se hayan asignado
 	vector<Edge*> neigh = edge->getFunction()->getNeighborhood();
 
 	if(neigh.size() != 0){
