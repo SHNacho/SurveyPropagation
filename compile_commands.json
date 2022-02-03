@@ -1,0 +1,107 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/main.cpp",
+      "-o",
+      "obj/main.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/main.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/variable.cpp",
+      "-o",
+      "obj/variable.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/variable.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/variable.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/function.cpp",
+      "-o",
+      "obj/function.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/function.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/function.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/edge.cpp",
+      "-o",
+      "obj/edge.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/edge.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/edge.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/graph.cpp",
+      "-o",
+      "obj/graph.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/graph.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/graph.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/SP.cpp",
+      "-o",
+      "obj/SP.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/SP.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/SP.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-std=c++1z",
+      "-g",
+      "-I./include",
+      "-c",
+      "src/random.cpp",
+      "-o",
+      "obj/random.o"
+    ],
+    "directory": "/home/nacho/Proyectos/SurveyPropagation",
+    "file": "/home/nacho/Proyectos/SurveyPropagation/src/random.cpp",
+    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/random.o"
+  }
+]

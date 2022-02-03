@@ -20,11 +20,14 @@ class Edge
 		Edge(Variable* variable, Function* function, bool negated);
 		void setSurvey(double survey);
 		const double getSurvey();
-		const bool isNegated();
+		const bool isNegated(){return negated;};
 		Variable* getVariable();
 		Function* getFunction();
-		// TODO
 		void calculateProducts();
+		// TODO
+		~Edge();
+	private:
+		void initRandomSurvey();
 };
 
 #endif //EDGE_H

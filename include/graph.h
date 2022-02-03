@@ -26,9 +26,10 @@ class Graph
 		Graph(string file);
 		vector<Edge*> getEdges(){return edges;}
 		vector<Variable*> getVariables(){return variables;}
+		vector<Function*> getFunctions(){return functions;}
 		void addEdge(Variable* var, Function* func, bool neg);
 		// TODO
-		void clean(){}
+		void clean(Variable* fixed_var);
 	
 	private:
 		void initVariables(int n_variables);

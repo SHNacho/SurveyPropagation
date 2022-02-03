@@ -29,7 +29,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 			double prev_survey = e->getSurvey();
 			e->setSurvey(SP_UPDATE(e));
 			
-			if(e->getSurvey() - prev_survey < precision)
+			if((e->getSurvey() - prev_survey) < precision)
 				counter++;
 		}
 
@@ -54,7 +54,7 @@ double SP_UPDATE(Edge* edge){
 				n->calculateProducts();
 			}
 			
-			survey = survey * (var->getPu()/
+			survey = survey * (var->getPu() /
 						  (var->getPu() + var->getPs() + var->getP0()));
 		}
 	}
@@ -67,10 +67,13 @@ void unitPropagation(Graph* graph){
 
 }
 
-vector<bool> SID(Graph* graph, int t_max, float precision){
+vector<int> SID(Graph* graph, int t_max, float precision){
 	vector<Edge*> edges = graph->getEdges();
 	vector<Variable*> variables = graph->getVariables();
 
+	vector<int> assign(variables.size(), -1);
+
+	// Inicializamos las "survey" de manera aleatoria
 	for(Edge* e : edges){
 		e->setSurvey(Randfloat(0.0, 1.0));
 	}
@@ -82,7 +85,7 @@ vector<bool> SID(Graph* graph, int t_max, float precision){
 
 		for(Edge* e : edges){
 			if (e->getSurvey() != 0.00)
-				trivial = true;
+				trivial = false;
 		}
 
 		// Si hay "surveys" que no sean triviales
@@ -97,9 +100,12 @@ vector<bool> SID(Graph* graph, int t_max, float precision){
 				}
 			}
 
-			variables[pos_max_bias]->fix();
-
-			graph->clean();
+			Variable* aux = variables[pos_max_bias];
+			aux->fix();
+			// Introducimos la asignación en el vector solución
+			assign[aux->getId()] = aux->getValue();
+			
+			graph->clean(variables[pos_max_bias]);
 		}
 		else{
 			//walksat()

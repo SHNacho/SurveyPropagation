@@ -1,7 +1,9 @@
 #include <fstream>
+#include <ios>
 #include <string>
 #include <numeric>
 #include <cstdlib>
+#include <algorithm>
 
 #include "graph.h"
 #include "variable.h"
@@ -80,10 +82,10 @@ Graph::Graph(string file){
 
 //----------------------------------------------//
 void Graph::addEdge(Variable* var, Function* func, bool neg){
-	Edge edge(var, func, neg);
-	edges.push_back(&edge);
-	var->addNeighbor(&edge);
-	func->addNeighbor(&edge);
+	Edge* e = new Edge(var, func, neg);
+	edges.push_back(e);
+	var->addNeighbor(e);
+	func->addNeighbor(e);
 }
 
 //----------------------------------------------//
@@ -99,5 +101,61 @@ void Graph::initFunctions(int n_functions){
 		this->functions.push_back(new Function(i));
 	}
 }
+
+//----------------------------------------------//
+void Graph::clean(Variable* fixed_var){
+	int val = fixed_var->getValue();
+	// Obtenemos el id de la variable fijada
+	int id = fixed_var->getId();	
+
+	// Eliminamos del grafo todas las aristas que
+	// incluyan la variable
+	for(int i = 0; i < edges.size(); ++i){
+		int var_id = edges[i]->getVariable()->getId();
+		if(var_id == id){
+			edges.erase(edges.begin() + i);
+		}
+	}
+
+	vector<Edge*> neigh;
+	// Si el valor asignado a la variable es 0
+	// eliminamos todas las aristas que contengan
+	// las cláusulas que tengan esta variable negada
+	if ( val == 0){
+		neigh = fixed_var->getNegNeighborhood();
+	// Si el valor asignado a la variable es 1
+	// eliminamos todas las aristas que contengan
+	// las cláusulas que tengan esta variable NO negada
+	} else {
+		neigh = fixed_var->getPosNeighborhood();
+	}
+
+	for(int i = 0; i < neigh.size(); ++i){
+		Function* func = neigh[i]->getFunction();
+		int func_id = func->getId();
+
+		for(int j = 0; j < edges.size(); ++j){
+			int edge_func_id = edges[j]->getFunction()->getId();
+			if(edge_func_id == func_id){
+				edges.erase(edges.begin() + j);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -19,8 +19,15 @@ class Function
 
 	public:
 		Function(int id);
+		int getId(){return id;}
 		vector<Edge*> getNeighborhood();
 		void addNeighbor(Edge* neigh);
+		// Elimina un vecino (en caso de que
+		// la variable ya se haya asignado)
+		// Se realiza en tiempo O(k) 
+		// (k -> número de variables por clausula)
+		void removeNeighbor(Edge* neigh);
+		~Function();
 };
 
 #endif //FUNCTION_H

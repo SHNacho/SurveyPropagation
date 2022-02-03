@@ -11,7 +11,7 @@ class Variable
 {
 	private:
 		int id; 
-		bool value;
+		int value;
 		// Conjunto de nodos vecinos (nodos función)
 		// se identifican por su arista
 		vector<Edge*> neighborhood;
@@ -36,6 +36,8 @@ class Variable
 
 	public:
 		Variable(int id);
+		int getId(){return id;}
+		int getValue(){return value;}
 		vector<Edge*> getNeighborhood();
 		vector<Edge*> getPosNeighborhood();
 		vector<Edge*> getNegNeighborhood();
@@ -49,11 +51,11 @@ class Variable
 		void setPu(double pu);
 		void setP0(double p0);
 		void addNeighbor (Edge* neigh);
-		//TODO: Devuelve la resta entre bias positivo y negativo
 		double calculateBias();
-		//TODO
-		void fix(){}
+		void fix();
+		void removeNeighbor(int func_id);
 
+		friend bool operator==(const Variable& lhs, const Variable& rhs);
 };
 
 
