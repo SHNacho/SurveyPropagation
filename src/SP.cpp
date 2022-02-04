@@ -9,6 +9,13 @@
 
 using namespace std;
 
+enum result { 
+	SP_UNCONVERGED, 
+	SP_CONVERGED,
+	CONTRADICTION,
+	NO_CONTRADICTION
+};
+
 bool surveyPropagation(Graph* graph, int t_max, float precision){
 	bool unconverged = false;
 
@@ -63,8 +70,32 @@ double SP_UPDATE(Edge* edge){
 	return survey;
 }
 
-void unitPropagation(Graph* graph){
+result unitPropagation(Graph* graph){
+	vector<Function*> functions = graph->getFunctions();
+	// Para cada cláusula
+	for(Function* f : functions){
+		// Comprobamos si solo tiene una variable
+		// y si es así, asignamos el valor de dicha
+		// variable que satisfaga la cláusula
+		if(f->getEnabledEdges() == 1){
+			Edge* neigh = f->getNeighborhood()[0];
+			Variable* var = neigh->getVariable();
+			if(neigh->isNegated()){
+				// Si la variable ya está asignada y
+				// es distinta de la que se requiere,
+				// hemos llegado a una contradicción
+				if(var->getValue() != 0) return CONTRADICTION;
+				var->setValue(0);
+			} else {
+				if(var->getValue() != 1) return CONTRADICTION;
+				var->setValue(1);
+			}
 
+			graph->clean(var);
+		}
+	}
+	
+	return NO_CONTRADICTION;
 }
 
 vector<int> SID(Graph* graph, int t_max, float precision){
@@ -77,6 +108,8 @@ vector<int> SID(Graph* graph, int t_max, float precision){
 	for(Edge* e : edges){
 		e->setSurvey(Randfloat(0.0, 1.0));
 	}
+
+
 
 	while(true){
 		bool converge = surveyPropagation(graph, t_max, precision);
@@ -111,6 +144,11 @@ vector<int> SID(Graph* graph, int t_max, float precision){
 			//walksat()
 		}
 
-		unitPropagation(graph);
+		result resultado_unit_prop = unitPropagation(graph);
+		if(resultado_unit_prop == CONTRADICTION){
+			cout << "Se han encontrado contradicciones durante Unit Propagation" << endl;
+		}
 	}
 }
+
+

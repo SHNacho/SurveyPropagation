@@ -8,6 +8,21 @@ Variable::Variable(int id){
 	this->value = -1;
 }
 
+void Variable::setValue(int val){
+	this->value = val;
+	if(val == 0){
+		for(Edge* e : negativeNeighborhood){
+			Function* f = e->getFunction();
+			f->satisfy();
+		}
+	} else if (val == 1) {
+		for(Edge* e : positiveNeighborhood){
+			Function* f = e->getFunction();
+			f->satisfy();
+		}
+	}
+}
+
 vector<Edge*> Variable::getNeighborhood(){
 	return neighborhood;
 }
@@ -113,9 +128,9 @@ double Variable::calculateBias(){
 
 void Variable::fix(){
 	if(positiveBias > negativeBias)
-		value = 1;
+		this->setValue(1);
 	else
-		value = 0;
+		this->setValue(0);
 }
 
 bool operator==(const Variable& lhs, const Variable& rhs){

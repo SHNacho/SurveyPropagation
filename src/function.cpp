@@ -4,6 +4,8 @@
 
 Function::Function(int id){
 	this->id = id;
+	this->enabled_edges = 0;
+	this->satisfied = false;
 }
 
 Function::~Function(){
@@ -19,6 +21,7 @@ vector<Edge*> Function::getNeighborhood(){
 
 void Function::addNeighbor(Edge* neigh){
 	this->neighborhood.push_back(neigh);
+	enabled_edges++;
 }
 
 //---------------------------------------//
@@ -30,6 +33,7 @@ void Function::removeNeighbor(int var_id){
 			neighborhood[i]->getVariable()->removeNeighbor(this->id);
 			neighborhood.erase(neighborhood.begin() + pos);
 			bool found = true;
+			this->enabled_edges--;
 		}
 	}
 
