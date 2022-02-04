@@ -147,7 +147,7 @@ void Graph::clean(Variable* fixed_var){
 			edges[i]->getFunction()->removeNeighbor(id);
 		}
 	}
-
+	cout << "Número de aristas: " << edges.size() << endl;
 }
 
 

@@ -66,7 +66,7 @@ void Variable::removeNeighbor(int func_id){
 		neighborhood_ptr = &negativeNeighborhood;
 	}else{
 		it = positiveNeighborhood.begin();
-		end_it = negativeNeighborhood.end();
+		end_it = positiveNeighborhood.end();
 		neighborhood_ptr = &positiveNeighborhood;
 	}
 	
