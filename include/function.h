@@ -26,7 +26,8 @@ class Function
 		// la variable ya se haya asignado)
 		// Se realiza en tiempo O(k) 
 		// (k -> número de variables por clausula)
-		void removeNeighbor(Edge* neigh);
+		void removeNeighbor(int var_id);
+		void removeNeighborhood();
 		~Function();
 };
 

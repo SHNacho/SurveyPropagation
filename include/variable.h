@@ -36,6 +36,7 @@ class Variable
 
 	public:
 		Variable(int id);
+		void setValue(int val){this->value = val;}
 		int getId(){return id;}
 		int getValue(){return value;}
 		vector<Edge*> getNeighborhood();

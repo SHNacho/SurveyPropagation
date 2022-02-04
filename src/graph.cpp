@@ -108,15 +108,6 @@ void Graph::clean(Variable* fixed_var){
 	// Obtenemos el id de la variable fijada
 	int id = fixed_var->getId();	
 
-	// Eliminamos del grafo todas las aristas que
-	// incluyan la variable
-	for(int i = 0; i < edges.size(); ++i){
-		int var_id = edges[i]->getVariable()->getId();
-		if(var_id == id){
-			edges.erase(edges.begin() + i);
-		}
-	}
-
 	vector<Edge*> neigh;
 	// Si el valor asignado a la variable es 0
 	// eliminamos todas las aristas que contengan
@@ -137,10 +128,26 @@ void Graph::clean(Variable* fixed_var){
 		for(int j = 0; j < edges.size(); ++j){
 			int edge_func_id = edges[j]->getFunction()->getId();
 			if(edge_func_id == func_id){
+				func->removeNeighborhood();
 				edges.erase(edges.begin() + j);
+				j--;
 			}
 		}
 	}
+
+	// Eliminamos del grafo todas las aristas que
+	// incluyan la variable
+	for(int i = 0; i < edges.size(); ++i){
+		int var_id = edges[i]->getVariable()->getId();
+		if(var_id == id){
+			edges.erase(edges.begin() + i);
+			// Eliminamos el puntero que apunta a la variable
+			// en la cláusula, lo que elimina el puntero
+			// que apunta a la función en la variable.
+			edges[i]->getFunction()->removeNeighbor(id);
+		}
+	}
+
 }
 
 

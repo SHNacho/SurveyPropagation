@@ -46,11 +46,13 @@ void Variable::removeNeighbor(int func_id){
 	bool found = false;
 	bool neg;
 
-	for(it = neighborhood.begin(); it !=  neighborhood.end() && !found; it++){
-		if((*it)->getFunction()->getId() == func_id){
-			neg = (*it)->isNegated();
-			neighborhood.erase(it);	
-			found = true;
+	if(neighborhood.size() > 0){
+		for(it = neighborhood.begin(); it !=  neighborhood.end() && !found; it++){
+			if((*it)->getFunction()->getId() == func_id){
+				neg = (*it)->isNegated();
+				neighborhood.erase(it);	
+				found = true;
+			}
 		}
 	}
 
@@ -68,9 +70,8 @@ void Variable::removeNeighbor(int func_id){
 		neighborhood_ptr = &positiveNeighborhood;
 	}
 	
-	for(it; it !=  end_it && !found; it++){
+	for(; it !=  end_it && !found; it++){
 		if((*it)->getFunction()->getId() == func_id){
-			neg = (*it)->isNegated();
 			neighborhood_ptr->erase(it);	
 			found = true;
 		}

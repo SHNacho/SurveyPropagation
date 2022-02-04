@@ -12,7 +12,13 @@ int main (int argc, char *argv[]){
 	// Generamos el grafo
 	Graph g(file);
 
-	Variable* var = g.getFunctions()[0]->getNeighborhood()[0]->getVariable();
-	g.clean(var);
+	int graph_size = g.getVariables().size();
+	for(int i = 0; i < graph_size; ++i){
+		Variable* var = g.getVariables()[i];
+		int rand = Randint(0,1);
+		var->setValue(rand);
+		g.clean(var);
+	}
+	cout << "Limpio" << endl;
 	return 0;
 }
