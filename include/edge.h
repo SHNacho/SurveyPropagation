@@ -15,10 +15,13 @@ class Edge
 
 		bool negated;
 		double survey;
+		bool converged;
 
 	public:
 		Edge(Variable* variable, Function* function, bool negated);
 		void setSurvey(double survey);
+		void setConverged(bool conv);
+		bool hasConverged(){return converged;}
 		const double getSurvey();
 		const bool isNegated(){return negated;};
 		Variable* getVariable();

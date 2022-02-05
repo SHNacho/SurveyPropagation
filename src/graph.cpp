@@ -42,6 +42,7 @@ Graph::Graph(string file){
 	getline(ifs, line);
 	getline(ifs, line);
 
+	this->unassigned_vars = n;
 	// reservamos espacio para las variables, clausulas y aristas
 	this->variables.reserve(n);
 	this->functions.reserve(m);
@@ -86,6 +87,17 @@ void Graph::addEdge(Variable* var, Function* func, bool neg){
 	edges.push_back(e);
 	var->addNeighbor(e);
 	func->addNeighbor(e);
+}
+
+//----------------------------------------------//
+void Graph::assignVar(Variable* var, int val){
+	if(val == -1)
+		var->fix();
+	else
+		var->setValue(val);
+
+	unassigned_vars--;
+	cout << "Variable " << var->getId() << " asignada" << endl;
 }
 
 //----------------------------------------------//

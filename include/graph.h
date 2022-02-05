@@ -21,18 +21,46 @@ class Graph
 		vector<Edge*> edges;
 		vector<Variable*> variables;
 		vector<Function*> functions;
+		int unassigned_vars;
 
 	public:
 		Graph(string file);
 		vector<Edge*>& getEdges(){return edges;}
 		vector<Variable*>& getVariables(){return variables;}
 		vector<Function*>& getFunctions(){return functions;}
+		/**
+		 * Devuelve el número de variables no asignadas
+		 **/
+		int unassignedVars(){return unassigned_vars;}
+		/**
+		 * Añade una arista al grafo
+		 **/
 		void addEdge(Variable* var, Function* func, bool neg);
-		// TODO
+		/**
+		 * Dada una variable, la cual ha sido fijada a un valor
+		 * concreto, elimina del grafo todas las aristas que
+		 * contengan dicha variable así como las aristas que 
+		 * contengan clausulas que contengan la variable.
+		 * Además elimina los vecinos de las cláusulas satisfechas
+		 * y elimina solo el vecino que apunta a la variable de las
+		 * cláusulas no satisfechas
+		 **/
 		void clean(Variable* fixed_var);
+		/**
+		 * Dada una variable le asigna un valor, el cual
+		 * dependerá de los sesgos calculados para dicha
+		 * variable
+		 **/
+		void assignVar(Variable* assigned, int val = -1);
 	
 	private:
+		/**
+		 * Inicializa el vector de variables
+		 **/
 		void initVariables(int n_variables);
+		/**
+		 * Inicializa el vector de cláusulas
+		 **/
 		void initFunctions(int n_functions);
 };
 

@@ -23,18 +23,6 @@ void Variable::setValue(int val){
 	}
 }
 
-vector<Edge*> Variable::getNeighborhood(){
-	return neighborhood;
-}
-
-vector<Edge*> Variable::getPosNeighborhood(){
-	return positiveNeighborhood;
-}
-
-vector<Edge*> Variable::getNegNeighborhood(){
-	return negativeNeighborhood;
-}
-
 void Variable::setP0(double p0){
 	this->p0 = p0;
 }

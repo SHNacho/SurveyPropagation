@@ -25,7 +25,7 @@ class Function
 		int getEnabledEdges(){return enabled_edges;}
 		bool isSatisfied(){return satisfied;}
 		void satisfy(){satisfied = true;}
-		vector<Edge*> getNeighborhood();
+		vector<Edge*>& getNeighborhood(){return neighborhood;}
 		void addNeighbor(Edge* neigh);
 		// Elimina un vecino (en caso de que
 		// la variable ya se haya asignado)

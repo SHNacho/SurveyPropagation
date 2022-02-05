@@ -15,10 +15,6 @@ Function::~Function(){
 	neighborhood.clear();
 }
 
-vector<Edge*> Function::getNeighborhood(){
-	return neighborhood;
-}
-
 void Function::addNeighbor(Edge* neigh){
 	this->neighborhood.push_back(neigh);
 	enabled_edges++;

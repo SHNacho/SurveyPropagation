@@ -10,7 +10,7 @@ build: $(BIN)/main_exe
 all: clean build
 
 $(BIN)/main_exe: $(OBJ)/main.o $(OBJ)/variable.o $(OBJ)/function.o $(OBJ)/edge.o $(OBJ)/graph.o $(OBJ)/SP.o $(OBJ)/random.o
-	g++ -O0 -std=c++1z -g -I$(INC) $^ -o $@ 
+	g++ -std=c++1z -g -I$(INC) $^ -o $@ 
 
 $(OBJ)/main.o: $(SRC)/main.cpp $(INC)/SP.h 
 	g++ -std=c++1z -g -I$(INC) -c $< -o $@ 

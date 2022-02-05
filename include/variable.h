@@ -39,9 +39,9 @@ class Variable
 		void setValue(int val);
 		int getId(){return id;}
 		int getValue(){return value;}
-		vector<Edge*> getNeighborhood();
-		vector<Edge*> getPosNeighborhood();
-		vector<Edge*> getNegNeighborhood();
+		vector<Edge*>& getNeighborhood(){return neighborhood;};
+		vector<Edge*>& getPosNeighborhood(){return positiveNeighborhood;}
+		vector<Edge*>& getNegNeighborhood(){return negativeNeighborhood;}
 		double getPs(){return ps;}
 		double getPu(){return pu;}
 		double getP0(){return p0;}

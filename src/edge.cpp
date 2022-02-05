@@ -8,6 +8,7 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->function = function;
 	this->negated = negated;
 	this->survey = Randfloat(0.0000, 1.0000);
+	this->converged = false;
 }
 
 Edge::~Edge(){
@@ -16,6 +17,10 @@ Edge::~Edge(){
 
 void Edge::setSurvey(double survey){
 	this->survey = survey;
+}
+
+void Edge::setConverged(bool conv){
+	converged = conv;
 }
 
 const double Edge::getSurvey(){
@@ -38,11 +43,11 @@ void Edge::calculateProducts(){
 	// Calculamos los subproductos para la ecuación 26
 	vector<Edge*> pos_neigh = this->variable->getPosNeighborhood();
 	vector<Edge*> neg_neigh = this->variable->getNegNeighborhood();
-	vector<Edge*> neigh = this->variable->getNeighborhood();
+	vector<Edge*> total_neigh = this->variable->getNeighborhood();
 	
 	// Para el vecindario positivo
 	if(pos_neigh.size() > 0){
-		for( Edge* neigh : this->variable->getPosNeighborhood() ){
+		for( Edge* neigh : pos_neigh ){
 			// Si la variable está negada en la cláusula
 			if(negated)
 				// Calculamos el producto (V(a,u))
@@ -60,7 +65,7 @@ void Edge::calculateProducts(){
 		
 	// Para el vecindario negativo
 	if(neg_neigh.size() > 0){
-		for( Edge* neigh : this->variable->getNegNeighborhood() ){
+		for( Edge* neigh : neg_neigh ){
 			// Si la variable está negada en la cláusula
 			if(negated)
 				// Calculamos el producto (V(a,s))
@@ -76,8 +81,8 @@ void Edge::calculateProducts(){
 		subproduct_u = 1;
 	}
 	
-	if(neigh.size() > 0){
-		for( Edge* neigh : this->variable->getNeighborhood() ){
+	if(total_neigh.size() > 0){
+		for( Edge* neigh : total_neigh ){
 			subproduct_0 *= (1 - neigh->survey);
 		}
 	}else{
