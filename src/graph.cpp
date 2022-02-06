@@ -87,10 +87,35 @@ vector<Edge*> Graph::getEnabledEdges(){
 	vector<Edge*> v_enabled;
 	
 	for(Edge* e : edges){
-		if(e->isEnabled()) v_enabled.push_back(e);
+		if(e->isEnabled())
+			v_enabled.push_back(e);
 	}
 
 	return v_enabled;
+}
+
+//----------------------------------------------//
+vector<Function*> Graph::getEnabledFunctions(){
+	vector<Function*> v_functions;
+	for(Function* f : functions){
+		if(f->isEnabled()){
+			v_functions.push_back(f);	
+		}
+	}
+
+	return v_functions;
+}
+
+//----------------------------------------------//
+vector<Variable*> Graph::getUnassignedVariables(){
+	vector<Variable*> v_vars;
+	for(Variable* v : variables){
+		if (!(v->isAssigned())){
+			v_vars.push_back(v);
+		}
+	}
+
+	return v_vars;
 }
 
 //----------------------------------------------//

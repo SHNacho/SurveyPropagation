@@ -6,6 +6,7 @@ Function::Function(int id){
 	this->id = id;
 	this->enabled_edges = 0;
 	this->satisfied = false;
+	this->enabled = true;
 }
 
 //---------------------------------------//
@@ -23,11 +24,24 @@ void Function::addNeighbor(Edge* neigh){
 }
 
 //---------------------------------------//
+vector<Edge*> Function::getEnabledNeighborhood(){
+	vector<Edge*> v_enabled;
+	for(Edge* e : neighborhood){
+		if(e->isEnabled()){
+			v_enabled.push_back(e);
+		}
+	}
+	
+	return v_enabled;
+}
+
+//---------------------------------------//
 void Function::dissable(){
 	for(Edge* e : neighborhood){
 		if(e->isEnabled())
 			e->dissable();
 	}
+	enabled = false;
 }
 
 //---------------------------------------//

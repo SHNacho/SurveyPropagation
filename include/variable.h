@@ -61,6 +61,9 @@ class Variable
 		vector<Edge*>& getNeighborhood(){return neighborhood;};
 		vector<Edge*>& getPosNeighborhood(){return positiveNeighborhood;}
 		vector<Edge*>& getNegNeighborhood(){return negativeNeighborhood;}
+		vector<Edge*> enabledNeighborhood();
+		vector<Edge*> enabledPositiveNeighborhood();
+		vector<Edge*> enabledNegativeNeighborhood();
 		double getPs(){return ps;}
 		double getPu(){return pu;}
 		double getP0(){return p0;}

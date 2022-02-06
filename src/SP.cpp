@@ -33,19 +33,22 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 		// Recorremos las aristas de manera aleatoria
 		shuffle(std::begin(edges), std::end(edges), rng);
 		for(Edge* e : edges){
+			// Si la arista no ha convergido aún
 			if(!(e->hasConverged())){
-				// Actualizamos el mensaje para cada arista
+				// Actualizamos 'survey'
 				double prev_survey = e->getSurvey();
-				e->setSurvey(SP_UPDATE(e));
-
+				SP_UPDATE(e);
+				// Comprobamos si converge
 				if(abs(e->getSurvey() - prev_survey) < precision){
 					e->setConverged(true);
+					counter++;
 				}
 			} else {
 				counter++;
 			}
 		}
-
+		
+		// Si han convergido todas las aristas 
 		if(counter == edges.size())
 			next = true;	
 	}
@@ -63,7 +66,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 
 double SP_UPDATE(Edge* edge){
 	double survey = 1.0000;
-	vector<Edge*> neigh = edge->getFunction()->getNeighborhood();
+	vector<Edge*> neigh = edge->getFunction()->getEnabledNeighborhood();
 
 	if(neigh.size() != 0){
 		for(Edge* n : neigh){
@@ -72,26 +75,27 @@ double SP_UPDATE(Edge* edge){
 				n->calculateProducts();
 				survey = survey * (var->getPu() /
 						  (var->getPu() + var->getPs() + var->getP0()));
-			}
-			
+			}	
 		}
 	}
+
+	edge->setSurvey(survey);
 
 //	cout << "Survey calculada: " << survey << endl;
 	return survey;
 }
 
 result unitPropagation(Graph* graph){
-	vector<Function*> functions = graph->getFunctions();
+	vector<Function*> functions = graph->getEnabledFunctions();
 	// Para cada cláusula
 	for(Function* f : functions){
+		vector<Edge*> neigh = f->getEnabledNeighborhood();
 		// Comprobamos si solo tiene una variable
 		// y si es así, asignamos el valor de dicha
 		// variable que satisfaga la cláusula
-		if(f->getEnabledEdges() == 1){
-			Edge* neigh = f->getNeighborhood()[0];
-			Variable* var = neigh->getVariable();
-			if(neigh->isNegated()){
+		if(neigh.size() == 1){
+			Variable* var = neigh[0]->getVariable();
+			if(neigh[0]->isNegated()){
 				// Si la variable ya está asignada y
 				// es distinta de la que se requiere,
 				// hemos llegado a una contradicción
@@ -107,14 +111,20 @@ result unitPropagation(Graph* graph){
 			}
 			graph->clean(var);
 		}
+		// Si la cláusula no tiene vecinos significa que se
+		// han asignado todas sus variables y todavía no está
+		// satisfecha, por lo que no podemos seguir
+		else if(neigh.size() == 0){
+			return CONTRADICTION;
+		}
 	}
 	
 	return NO_CONTRADICTION;
 }
 
 bool SID(Graph* graph, int t_max, float precision){
-	vector<Edge*> edges = graph->getEdges();
-	vector<Variable*> variables = graph->getVariables();
+	vector<Edge*> edges = graph->getEnabledEdges();
+	vector<Variable*> variables = graph->getUnassignedVariables();
 
 	vector<int> assign(variables.size(), -1);
 
@@ -126,29 +136,25 @@ bool SID(Graph* graph, int t_max, float precision){
 
 
 	result result_unit_prop = NO_CONTRADICTION;
-	bool converge = true;
 
 	int count = 0;
 	while(graph->unassignedVars() > 0 &&
-		  result_unit_prop == NO_CONTRADICTION &&
-		  converge)
+		  result_unit_prop == NO_CONTRADICTION)
 	{
-		converge = surveyPropagation(graph, t_max, precision);
-		if(converge == false){
+		
+		if(!surveyPropagation(graph, t_max, precision)){
 			cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
 			return false;
 		}
 
+		// Comprobamos si el problema es trivial
 		bool trivial = true;
-
 		for(int i = 0; i < edges.size() && trivial; ++i){
 			if (edges[i]->getSurvey() != 0.00)
 				trivial = false;
 		}
 
-		cout << "No es trivial" << endl;
-
-		// Si hay "surveys" que no sean triviales
+		// Si no es trivial
 		double max_bias = 0.0;
 		double pos_max_bias = 0;
 		if(trivial == false){
@@ -188,7 +194,7 @@ bool SID(Graph* graph, int t_max, float precision){
 	}
 
 	for(Variable* var : variables){
-		if(var->getNeighborhood().size() == 0 && var->getValue() == -1)
+		if(var->enabledNeighborhood().size() == 0 && !(var->isAssigned())){}
 			graph->assignVar(var, 1);
 	}
 
