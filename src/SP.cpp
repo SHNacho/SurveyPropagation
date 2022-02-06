@@ -21,7 +21,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 
 	auto rng = std::default_random_engine {};
 
-	vector<Edge*> edges = graph->getEdges();
+	vector<Edge*> edges = graph->getEnabledEdges();
 
 	bool next = false;
 	int t;
@@ -38,14 +38,9 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 				double prev_survey = e->getSurvey();
 				e->setSurvey(SP_UPDATE(e));
 
-//				cout << "Survey anterior: " << prev_survey << endl;
-//				cout << "Survey actual:   " << e->getSurvey() << endl;
-//				cout << "Diferencia:      " << e->getSurvey() - prev_survey << endl;
-				
 				if(abs(e->getSurvey() - prev_survey) < precision){
 					e->setConverged(true);
 				}
-//				cout << "Diferencia: " << abs(e->getSurvey() - prev_survey) << endl;
 			} else {
 				counter++;
 			}
@@ -82,7 +77,6 @@ double SP_UPDATE(Edge* edge){
 		}
 	}
 
-
 //	cout << "Survey calculada: " << survey << endl;
 	return survey;
 }
@@ -101,13 +95,16 @@ result unitPropagation(Graph* graph){
 				// Si la variable ya está asignada y
 				// es distinta de la que se requiere,
 				// hemos llegado a una contradicción
-				if(var->getValue() != 0) return CONTRADICTION;
-				graph->assignVar(var, 0);
-			} else {
-				if(var->getValue() != 1) return CONTRADICTION;
-				graph->assignVar(var, 1);
-			}
+				if( var->isAssigned() && (var->getValue() != false) ) 
+					return CONTRADICTION;
 
+				graph->assignVar(var, false);
+			} else {
+				if( var->isAssigned() && (var->getValue() != true) ) 
+					return CONTRADICTION;
+
+				graph->assignVar(var, true);
+			}
 			graph->clean(var);
 		}
 	}

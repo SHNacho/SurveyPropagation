@@ -21,6 +21,8 @@ class Graph
 		vector<Edge*> edges;
 		vector<Variable*> variables;
 		vector<Function*> functions;
+
+		int enabled_edges;
 		int unassigned_vars;
 
 	public:
@@ -28,6 +30,7 @@ class Graph
 		vector<Edge*>& getEdges(){return edges;}
 		vector<Variable*>& getVariables(){return variables;}
 		vector<Function*>& getFunctions(){return functions;}
+		vector<Edge*> getEnabledEdges();
 		/**
 		 * Devuelve el número de variables no asignadas
 		 **/
@@ -46,12 +49,13 @@ class Graph
 		 * cláusulas no satisfechas
 		 **/
 		void clean(Variable* fixed_var);
+		void assignVar(Variable* assigned, bool val);
 		/**
 		 * Dada una variable le asigna un valor, el cual
 		 * dependerá de los sesgos calculados para dicha
 		 * variable
 		 **/
-		void assignVar(Variable* assigned, int val = -1);
+		void assignVar(Variable* assigned);
 	
 	private:
 		/**
