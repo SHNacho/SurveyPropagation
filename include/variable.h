@@ -10,11 +10,8 @@ class Edge;
 class Variable 
 {
 	private:
-		// id de la variable
 		int id; 
-		// Valor que toma la variable
-		bool value;
-		bool assigned;
+		int value;
 		// Conjunto de nodos vecinos (nodos función)
 		// se identifican por su arista
 		vector<Edge*> neighborhood;
@@ -39,23 +36,7 @@ class Variable
 
 	public:
 		Variable(int id);
-
-		void addNeighbor (Edge* neigh);
-		double calculateBias();
-		void fix();
-		void removeNeighbor(int func_id);
-
-		/////////////////////////
-		// Setters and getters //
-		/////////////////////////
-		/**
-		 * Asigna a la variable el valor 'val'.
-		 * - Si el valor es 0, marca como satisfechas 
-		 * todas las cláusulas de V-
-		 * - Si el valor es 1, marca como satisfechas
-		 * todas las cláusulas de V+
-		 */
-		void setValue(bool val);
+		void setValue(int val);
 		int getId(){return id;}
 		int getValue(){return value;}
 		vector<Edge*>& getNeighborhood(){return neighborhood;};
@@ -67,10 +48,15 @@ class Variable
 		double getPosBias(){return positiveBias;}
 		double getNegBias(){return negativeBias;}
 		double getNullBias(){return nullBias;}
-		void setPs(double ps){this->ps = ps;}
-		void setPu(double pu){this->pu = pu;}
-		void setP0(double p0){this->p0 = p0;}
-		bool isAssigned(){return assigned;}
+		void setPs(double ps);
+		void setPu(double pu);
+		void setP0(double p0);
+		void addNeighbor (Edge* neigh);
+		double calculateBias();
+		void fix();
+		void removeNeighbor(int func_id);
+
+		friend bool operator==(const Variable& lhs, const Variable& rhs);
 };
 
 

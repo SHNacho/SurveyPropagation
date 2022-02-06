@@ -5,29 +5,36 @@
 
 Variable::Variable(int id){
 	this->id = id;
-	this->value = false;
-	this->assigned = false;
+	this->value = -1;
 }
 
-//---------------------------------------//
-void Variable::setValue(bool val){
+void Variable::setValue(int val){
 	this->value = val;
-	if(!value){
+	if(val == 0){
 		for(Edge* e : negativeNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
 		}
-	} else if (value) {
+	} else if (val == 1) {
 		for(Edge* e : positiveNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
 		}
 	}
-
-	assigned = true;
 }
 
-//---------------------------------------//
+void Variable::setP0(double p0){
+	this->p0 = p0;
+}
+
+void Variable::setPs(double ps){
+	this->ps = ps;
+}
+
+void Variable::setPu(double pu){
+	this->pu = pu;
+}
+
 void Variable::addNeighbor(Edge* neigh){
 	this->neighborhood.push_back(neigh);
 	
@@ -37,7 +44,6 @@ void Variable::addNeighbor(Edge* neigh){
 		this->positiveNeighborhood.push_back(neigh);
 }
 
-//---------------------------------------//
 void Variable::removeNeighbor(int func_id){
 	vector<Edge*>::iterator it;
 	bool found = false;
@@ -75,7 +81,6 @@ void Variable::removeNeighbor(int func_id){
 	}
 }
 
-//---------------------------------------//
 double Variable::calculateBias(){
 
 	double positive_subprod = 1.0,
@@ -109,14 +114,16 @@ double Variable::calculateBias(){
 	return (positiveBias - negativeBias);
 }
 
-//---------------------------------------//
 void Variable::fix(){
 	if(positiveBias > negativeBias)
-		this->setValue(true);
+		this->setValue(1);
 	else
-		this->setValue(false);
+		this->setValue(0);
 }
 
+bool operator==(const Variable& lhs, const Variable& rhs){
+	return lhs.id == rhs.id;
+}
 
 
 

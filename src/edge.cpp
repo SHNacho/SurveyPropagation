@@ -9,7 +9,10 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->negated = negated;
 	this->survey = Randfloat(0.0000, 1.0000);
 	this->converged = false;
-	this->enabled = false;
+}
+
+Edge::~Edge(){
+	variable->removeNeighbor(function->getId());
 }
 
 void Edge::setSurvey(double survey){

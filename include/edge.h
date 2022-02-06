@@ -15,7 +15,6 @@ class Edge
 
 		bool negated;
 		double survey;
-		bool enabled;
 		bool converged;
 
 	public:
@@ -24,12 +23,12 @@ class Edge
 		void setConverged(bool conv);
 		bool hasConverged(){return converged;}
 		const double getSurvey();
-		const bool isNegated(){return negated;}
-		const bool isEnabled(){return enabled;}
-		void dissable(){enabled = false;}
+		const bool isNegated(){return negated;};
 		Variable* getVariable();
 		Function* getFunction();
 		void calculateProducts();
+		// TODO
+		~Edge();
 	private:
 		void initRandomSurvey();
 };

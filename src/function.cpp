@@ -8,7 +8,6 @@ Function::Function(int id){
 	this->satisfied = false;
 }
 
-//---------------------------------------//
 Function::~Function(){
 	for(Edge* e : neighborhood){
 		delete e;
@@ -16,18 +15,9 @@ Function::~Function(){
 	neighborhood.clear();
 }
 
-//---------------------------------------//
 void Function::addNeighbor(Edge* neigh){
 	this->neighborhood.push_back(neigh);
 	enabled_edges++;
-}
-
-//---------------------------------------//
-void Function::dissable(){
-	for(Edge* e : neighborhood){
-		if(e->isEnabled())
-			e->dissable();
-	}
 }
 
 //---------------------------------------//

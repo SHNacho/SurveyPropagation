@@ -47,7 +47,6 @@ Graph::Graph(string file){
 	this->variables.reserve(n);
 	this->functions.reserve(m);
 	this->edges.reserve(m * k);
-	this->enabled_edges = 0;
 
 	// inicializamos las variables y cláusulas
 	// rellenando el vector de variables de 1 a n
@@ -83,17 +82,6 @@ Graph::Graph(string file){
 }
 
 //----------------------------------------------//
-vector<Edge*> Graph::getEnabledEdges(){
-	vector<Edge*> v_enabled;
-	
-	for(Edge* e : edges){
-		if(e->isEnabled()) v_enabled.push_back(e);
-	}
-
-	return v_enabled;
-}
-
-//----------------------------------------------//
 void Graph::addEdge(Variable* var, Function* func, bool neg){
 	Edge* e = new Edge(var, func, neg);
 	edges.push_back(e);
@@ -102,14 +90,14 @@ void Graph::addEdge(Variable* var, Function* func, bool neg){
 }
 
 //----------------------------------------------//
-void Graph::assignVar(Variable* var, bool val){
-	var->setValue(val);
-	unassigned_vars--;
-}
+void Graph::assignVar(Variable* var, int val){
+	if(val == -1)
+		var->fix();
+	else
+		var->setValue(val);
 
-void Graph::assignVar(Variable* var){
-	var->fix();
 	unassigned_vars--;
+	cout << "Variable " << var->getId() << " asignada" << endl;
 }
 
 //----------------------------------------------//
@@ -128,15 +116,50 @@ void Graph::initFunctions(int n_functions){
 
 //----------------------------------------------//
 void Graph::clean(Variable* fixed_var){
-	bool val = fixed_var->getValue();
-	for(Edge* e : fixed_var->getNeighborhood()){
-		if(e->isEnabled()){
-			if(val == e->isNegated())
-				e->getFunction()->dissable();
-			else 
-				e->dissable();
+	int val = fixed_var->getValue();
+	// Obtenemos el id de la variable fijada
+	int id = fixed_var->getId();	
+
+	vector<Edge*> neigh;
+	// Si el valor asignado a la variable es 0
+	// eliminamos todas las aristas que contengan
+	// las cláusulas que tengan esta variable negada
+	if ( val == 0){
+		neigh = fixed_var->getNegNeighborhood();
+	// Si el valor asignado a la variable es 1
+	// eliminamos todas las aristas que contengan
+	// las cláusulas que tengan esta variable NO negada
+	} else {
+		neigh = fixed_var->getPosNeighborhood();
+	}
+
+	for(int i = 0; i < neigh.size(); ++i){
+		Function* func = neigh[i]->getFunction();
+		int func_id = func->getId();
+
+		for(int j = 0; j < edges.size(); ++j){
+			int edge_func_id = edges[j]->getFunction()->getId();
+			if(edge_func_id == func_id){
+				func->removeNeighborhood();
+				edges.erase(edges.begin() + j);
+				j--;
+			}
 		}
 	}
+
+	// Eliminamos del grafo todas las aristas que
+	// incluyan la variable
+	for(int i = 0; i < edges.size(); ++i){
+		int var_id = edges[i]->getVariable()->getId();
+		if(var_id == id){
+			edges.erase(edges.begin() + i);
+			// Eliminamos el puntero que apunta a la variable
+			// en la cláusula, lo que elimina el puntero
+			// que apunta a la función en la variable.
+			edges[i]->getFunction()->removeNeighbor(id);
+		}
+	}
+	cout << "Número de aristas: " << edges.size() << endl;
 }
 
 
