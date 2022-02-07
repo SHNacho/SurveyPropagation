@@ -17,16 +17,18 @@ class Function
 		int id;
 		int enabled_edges;
 		bool satisfied;
+		bool enabled;
 		vector<Edge*> neighborhood;
 
 	public:
 		Function(int id);
 		int getId(){return id;}
 		int getEnabledEdges(){return enabled_edges;}
+		bool isEnabled(){return enabled;}
 		bool isSatisfied(){return satisfied;}
 		void satisfy(){satisfied = true;}
 		vector<Edge*>& getNeighborhood(){return neighborhood;}
-		vector<Edge*>& getEnabledNeighborhood();
+		vector<Edge*> getEnabledNeighborhood();
 		void addNeighbor(Edge* neigh);
 		// Elimina un vecino (en caso de que
 		// la variable ya se haya asignado)

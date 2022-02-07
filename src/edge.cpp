@@ -9,7 +9,7 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->negated = negated;
 	this->survey = Randfloat(0.0000, 1.0000);
 	this->converged = false;
-	this->enabled = false;
+	this->enabled = true;
 }
 
 void Edge::setSurvey(double survey){
@@ -32,52 +32,52 @@ Function* Edge::getFunction(){
 	return this->function;
 }
 
+//TODO: Se puede optimizar ya que en cada iteración de SP_UPDATE
+//		se llama a esta función para todas las aristas, por lo que 
+//		podemos almacenar los subproductos en las variables
+//		y no se repite el cálculo si dos aristas tienen la misma
+//		variable.
+//		Este cálculo no valdría para la siguiente llamada a 
+//		SP_UPDATE
 void Edge::calculateProducts(){
 	double subproduct_u = 1.0,
 		   subproduct_s = 1.0,
 		   subproduct_0 = 1.0;
 	
 	// Calculamos los subproductos para la ecuación 26
-	vector<Edge*> pos_neigh = this->variable->getPosNeighborhood();
-	vector<Edge*> neg_neigh = this->variable->getNegNeighborhood();
-	vector<Edge*> total_neigh = this->variable->getNeighborhood();
+	vector<Edge*> pos_neigh = this->variable->enabledPositiveNeighborhood();
+	vector<Edge*> neg_neigh = this->variable->enabledNegativeNeighborhood();
+	vector<Edge*> total_neigh = this->variable->enabledNeighborhood();
 	
-	// Para el vecindario positivo
-	if(pos_neigh.size() > 0){
-		for( Edge* neigh : pos_neigh ){
-			// Si la variable está negada en la cláusula
-			if(negated)
-				// Calculamos el producto (V(a,u))
+	// Si la variable está negada en la clausula
+	if(negated){
+		if(pos_neigh.size() > 0)
+			for( Edge* neigh : pos_neigh )
 				subproduct_u *= (1 - neigh->survey);
-			// Si no está negada
-			else
-				// Calculamos el producto (V(a,s))
-				subproduct_s *= (1 - neigh->survey);	
-		}
-	// Si no hay vecindario los productos valen 1
-	} else{
-		subproduct_s = 1;
-		subproduct_u = 1;
+		else
+			subproduct_u = 1.0;
+
+		if(neg_neigh.size() > 0)
+			for( Edge* neigh : neg_neigh )
+				subproduct_s *= (1 - neigh->getSurvey());
+		else
+			subproduct_s = 1.0;
 	}
-		
-	// Para el vecindario negativo
-	if(neg_neigh.size() > 0){
-		for( Edge* neigh : neg_neigh ){
-			// Si la variable está negada en la cláusula
-			if(negated)
-				// Calculamos el producto (V(a,s))
+	// Si la variable no está negada en la cláusula
+	else{
+		if(pos_neigh.size() > 0)
+			for( Edge* neigh : pos_neigh )
 				subproduct_s *= (1 - neigh->survey);
-			// Si no está negada
-			else
-				// Calculamos el producto (V(a,u))
-				subproduct_u *= (1 - neigh->survey);	
-		}
-	// Si no hay vecindario, los productos valen 1
-	}else{
-		subproduct_s = 1;
-		subproduct_u = 1;
+		else
+			subproduct_s = 1.0;
+
+		if(neg_neigh.size() > 0)
+			for( Edge* neigh : neg_neigh )
+				subproduct_u *= (1 - neigh->getSurvey());
+		else
+			subproduct_u = 1.0;
 	}
-	
+
 	if(total_neigh.size() > 0){
 		for( Edge* neigh : total_neigh ){
 			subproduct_0 *= (1 - neigh->survey);

@@ -10,6 +10,39 @@ Variable::Variable(int id){
 }
 
 //---------------------------------------//
+vector<Edge*> Variable::enabledNeighborhood(){
+	vector<Edge*> enabled_neighborhood;
+	for(Edge* e : neighborhood){
+		if(e->isEnabled()){
+			enabled_neighborhood.push_back(e);		
+		}
+	}
+	return enabled_neighborhood;
+}
+
+//---------------------------------------//
+vector<Edge*> Variable::enabledPositiveNeighborhood(){
+	vector<Edge*> enabled_neighborhood;
+	for(Edge* e : positiveNeighborhood){
+		if(e->isEnabled()){
+			enabled_neighborhood.push_back(e);		
+		}
+	}
+	return enabled_neighborhood;
+}
+
+//---------------------------------------//
+vector<Edge*> Variable::enabledNegativeNeighborhood(){
+	vector<Edge*> enabled_neighborhood;
+	for(Edge* e : negativeNeighborhood){
+		if(e->isEnabled()){
+			enabled_neighborhood.push_back(e);		
+		}
+	}
+	return enabled_neighborhood;
+}
+
+//---------------------------------------//
 void Variable::setValue(bool val){
 	this->value = val;
 	if(!value){

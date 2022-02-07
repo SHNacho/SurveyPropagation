@@ -31,6 +31,8 @@ class Graph
 		vector<Variable*>& getVariables(){return variables;}
 		vector<Function*>& getFunctions(){return functions;}
 		vector<Edge*> getEnabledEdges();
+		vector<Function*> getEnabledFunctions();
+		vector<Variable*> getUnassignedVariables();
 		/**
 		 * Devuelve el número de variables no asignadas
 		 **/
