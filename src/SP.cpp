@@ -128,9 +128,12 @@ bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 
 		for(int j = 0; j < MAX_FLIPS; ++j){
 			if(graph->unassignedVars() == 0) return true;
-			bool fliped = false;
-			vector<Variable*> variables = graph->
-			for(int k = 0; k < )
+			vector<Variable*> variables = graph->getUnassignedVariables();
+			//TODO: Buscar la variable que produzca la mejor variación
+			for(int k = 0; k < variables.size(); ++i){
+			}
+
+			// TODO: Flip la variable que produzca la mejor variación
 		}
 	}
 }
