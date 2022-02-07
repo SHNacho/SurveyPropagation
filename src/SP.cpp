@@ -112,6 +112,19 @@ result unitPropagation(Graph* graph){
 	return NO_CONTRADICTION;
 }
 
+bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
+	for (int i = 0; i < MAX_TRIES; ++i){
+		// TODO:Asigación aleatoria
+
+		for(int j = 0; j < MAX_FLIPS; ++j){
+			if(graph->unassignedVars() == 0) return true;
+			bool fliped = false;
+			vector<Variable*> variables = graph->
+			for(int k = 0; k < )
+		}
+	}
+}
+
 bool SID(Graph* graph, int t_max, float precision){
 	vector<Edge*> edges = graph->getEdges();
 	vector<Variable*> variables = graph->getVariables();
