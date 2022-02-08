@@ -58,21 +58,17 @@ Graph::Graph(string file){
 	// Pasamos a leer las clausulas
 	for(int i = 0; i < m; ++i){
 		int var;
-		for(int j = 0; j < k; ++j){
-
+		do{
 			bool neg = true;
 			
 			ifs >> var;
-			if(var > 0){
-				neg = false;
+			if(var > 0)	neg = false;
+			
+			if(var != 0){
+				int var_pos = abs(var) - 1;
+				addEdge(variables[var_pos], functions[i], neg);
 			}
-				
-			int var_pos = abs(var) - 1;
-
-			addEdge(variables[var_pos], functions[i], neg);
-		}	
-
-		ifs >> var;
+		} while(var != 0);
 	}
 
 	ifs.close();
@@ -126,6 +122,20 @@ void Graph::addEdge(Variable* var, Function* func, bool neg){
 	func->addNeighbor(e);
 }
 
+void Graph::addEdge(Edge edge){
+	edges.push_back(&edge);
+}
+
+//----------------------------------------------//
+void Graph::addFunction(Function function){
+	functions.push_back(&function);
+}
+
+//----------------------------------------------//
+void Graph::addVariable(Variable variable){
+	variables.push_back(&variable);
+}
+
 //----------------------------------------------//
 void Graph::assignVar(Variable* var, bool val){
 	var->setValue(val);
@@ -162,6 +172,55 @@ void Graph::clean(Variable* fixed_var){
 				e->dissable();
 		}
 	}
+}
+
+
+//----------------------------------------------//
+Graph Graph::simplifiedFormula(){
+	ofstream outfile("data/simplified.txt");
+	int n = 0,
+		m = 0;
+
+	outfile << "c" << endl;
+	for(Variable* v : variables){
+		if(!(v->isAssigned())){
+			++n;
+		}
+	}
+	outfile << "c\tvalue n = " << variables.size() << endl;
+	for(Function* f : functions){
+		if(f->isEnabled()){
+			m++;
+		}
+	}
+	outfile << "c\tvalue m = " << m << endl;
+	outfile << "c" << endl;
+	outfile << "p" << endl;
+	for(Function* f : functions){
+		if(f->isEnabled()){
+			vector <Edge*> neigh = f->getEnabledNeighborhood();
+			for(Edge* e : neigh){
+				if(e->isEnabled()){
+					if(e->isNegated())
+						outfile << "-" << e->getVariable()->getId() << " ";
+					else
+						outfile << e->getVariable()->getId() << " ";
+				}
+			}
+			outfile << "0" << endl;
+		}
+	}
+
+	outfile.close();
+
+	Graph g("data/simplified.txt");
+
+	return g;
+}
+
+//----------------------------------------------//
+int Graph::Break(Variable* var){
+	
 }
 
 

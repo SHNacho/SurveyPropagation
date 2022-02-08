@@ -41,6 +41,16 @@ class Graph
 		 * Añade una arista al grafo
 		 **/
 		void addEdge(Variable* var, Function* func, bool neg);
+		void addEdge(Edge edge);
+		/**
+		 * Añade una cláusula al grafo
+		 **/
+		void addFunction(Function function);
+		/**
+		 * Añade una variable al grafo
+		 **/
+		void addVariable(Variable variable);
+
 		/**
 		 * Dada una variable, la cual ha sido fijada a un valor
 		 * concreto, elimina del grafo todas las aristas que
@@ -58,6 +68,13 @@ class Graph
 		 * variable
 		 **/
 		void assignVar(Variable* assigned);
+		Graph simplifiedFormula();
+		/**
+		 * Calcula el número de cláusulas que pasan de estar
+		 * satisfechas a insatisfechas al realizar un 'flip'
+		 * sobre la variable 'var'
+		 **/
+		int Break(Variable* var);
 	
 	private:
 		/**

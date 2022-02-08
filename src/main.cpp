@@ -13,7 +13,7 @@ int main (int argc, char *argv[]){
 	// Generamos el grafo
 	Graph g(file);
 
-	SID(&g, 1000, 0.001);
+	SID(&g, 1000, 0.001, 0.04);
 
 	vector<Variable*> variables = g.getVariables();
 

@@ -49,11 +49,13 @@ void Variable::setValue(bool val){
 		for(Edge* e : negativeNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
+			f->dissable();
 		}
 	} else if (value) {
 		for(Edge* e : positiveNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
+			f->dissable();
 		}
 	}
 
@@ -150,6 +152,23 @@ void Variable::fix(){
 		this->setValue(false);
 }
 
+//---------------------------------------//
+bool compareVars(Variable* v1, Variable* v2){
+	double v1_pbias = v1->getPosBias();
+	double v1_nbias = v1->getNegBias();
+	double v2_pbias = v2->getPosBias();
+	double v2_nbias = v2->getNegBias();
+
+	double v1_diff = abs(v1_pbias - v1_nbias);
+	double v2_diff = abs(v2_pbias - v2_nbias);
+
+	// Si v1 ya está asignada la mandamos al final
+	if(v1->isAssigned()) return false;
+	// Si v2 ya está asignada, v1 va delante
+	if(v2->isAssigned()) return true;
+
+	return (v1_diff > v2_diff);
+}
 
 
 

@@ -76,5 +76,6 @@ class Variable
 		bool isAssigned(){return assigned;}
 };
 
+bool compareVars(Variable* v1, Variable* v2);
 
 #endif //VARIABLE_H

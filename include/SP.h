@@ -10,6 +10,6 @@ bool surveyPropagation(Graph grafo, int t_max, float precision);
 
 double SP_UPDATE(Edge* edge);
 
-bool SID(Graph* graph, int t_max, float precision);
+bool SID(Graph* graph, int t_max, float precision, float f);
 
 #endif //SP_H

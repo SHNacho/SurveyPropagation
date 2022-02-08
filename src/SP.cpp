@@ -23,10 +23,14 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 
 	vector<Edge*> edges = graph->getEnabledEdges();
 
+	// Inicializamos las "survey" de manera aleatoria
+	for(Edge* e : edges){
+		e->setSurvey(Randfloat(0.0, 1.0));
+	}
 	bool next = false;
 	int t;
 	for(t = 1; t <= t_max && !next; ++t){
-		cout << "SP iter: " << t << endl;
+		//cout << "SP Iter: " << t << endl;
 		// Contador para contar el número de aristas que han
 		// alcanzado la precisión deseada
 		int counter = 0;
@@ -89,33 +93,35 @@ result unitPropagation(Graph* graph){
 	vector<Function*> functions = graph->getEnabledFunctions();
 	// Para cada cláusula
 	for(Function* f : functions){
-		vector<Edge*> neigh = f->getEnabledNeighborhood();
-		// Comprobamos si solo tiene una variable
-		// y si es así, asignamos el valor de dicha
-		// variable que satisfaga la cláusula
-		if(neigh.size() == 1){
-			Variable* var = neigh[0]->getVariable();
-			if(neigh[0]->isNegated()){
-				// Si la variable ya está asignada y
-				// es distinta de la que se requiere,
-				// hemos llegado a una contradicción
-				if( var->isAssigned() && (var->getValue() != false) ) 
-					return CONTRADICTION;
-
-				graph->assignVar(var, false);
-			} else {
-				if( var->isAssigned() && (var->getValue() != true) ) 
-					return CONTRADICTION;
-
-				graph->assignVar(var, true);
+		if(f->isEnabled()){
+			vector<Edge*> neigh = f->getEnabledNeighborhood();
+			// Si la cláusula no tiene vecinos significa que se
+			// han asignado todas sus variables y todavía no está
+			// satisfecha, por lo que no podemos seguir
+			if(neigh.size() == 0){
+				return CONTRADICTION;
 			}
-			graph->clean(var);
-		}
-		// Si la cláusula no tiene vecinos significa que se
-		// han asignado todas sus variables y todavía no está
-		// satisfecha, por lo que no podemos seguir
-		else if(neigh.size() == 0){
-			return CONTRADICTION;
+			// Comprobamos si solo tiene una variable
+			// y si es así, asignamos el valor de dicha
+			// variable que satisfaga la cláusula
+			else if(neigh.size() == 1){
+				Variable* var = neigh[0]->getVariable();
+				if(neigh[0]->isNegated()){
+					// Si la variable ya está asignada y
+					// es distinta de la que se requiere,
+					// hemos llegado a una contradicción
+					if( var->isAssigned() && (var->getValue() != false) ) 
+						return CONTRADICTION;
+	
+					graph->assignVar(var, false);
+				} else {
+					if( var->isAssigned() && (var->getValue() != true) ) 
+						return CONTRADICTION;
+	
+					graph->assignVar(var, true);
+				}
+				graph->clean(var);
+			}
 		}
 	}
 	
@@ -138,18 +144,9 @@ bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 	}
 }
 
-bool SID(Graph* graph, int t_max, float precision){
+bool SID(Graph* graph, int t_max, float precision, float f){
 	vector<Edge*> edges = graph->getEnabledEdges();
 	vector<Variable*> variables = graph->getUnassignedVariables();
-
-	vector<int> assign(variables.size(), -1);
-
-	// Inicializamos las "survey" de manera aleatoria
-	for(Edge* e : edges){
-		e->setSurvey(Randfloat(0.0, 1.0));
-	}
-
-
 
 	result result_unit_prop = NO_CONTRADICTION;
 
@@ -157,7 +154,6 @@ bool SID(Graph* graph, int t_max, float precision){
 	while(graph->unassignedVars() > 0 &&
 		  result_unit_prop == NO_CONTRADICTION)
 	{
-		
 		if(!surveyPropagation(graph, t_max, precision)){
 			cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
 			return false;
@@ -171,31 +167,26 @@ bool SID(Graph* graph, int t_max, float precision){
 		}
 
 		// Si no es trivial
-		double max_bias = 0.0;
-		double pos_max_bias = 0;
 		if(trivial == false){
 			for(int i = 0; i < variables.size(); ++i){
-				if(variables[i]->getValue() == -1){
-					double bias = variables[i]->calculateBias();
-					if(abs(bias) >= max_bias){
-						max_bias = abs(bias);
-						pos_max_bias = i;
-					}
+				if(!(variables[i]->isAssigned())){
+					variables[i]->calculateBias();
 				}
 			}
 
-			Variable* aux = variables[pos_max_bias];
-			graph->assignVar(aux);
+			sort(variables.begin(), variables.end(), compareVars);
 
+			int unassigned_vars = graph->unassignedVars();
+			int aux = unassigned_vars * f;
+			int n_vars_fix = (1 < aux) ? aux : 1;
 			
-
-			// Introducimos la asignación en el vector solución
-			assign[aux->getId()] = aux->getValue();
-			
-			graph->clean(variables[pos_max_bias]);
-			cout << "Se limpia el grafo. Número de aristas: " << graph->getEdges().size() << endl; 
+			for(int i = 0; i < n_vars_fix; ++i){
+				graph->assignVar(variables[i]);
+				graph->clean(variables[i]);
+			}
 		}
 		else{
+			
 			//walksat()
 			cout << "walksat" << endl;
 			return true;
@@ -206,12 +197,16 @@ bool SID(Graph* graph, int t_max, float precision){
 			cout << "Se han encontrado contradicciones durante Unit Propagation" << endl;
 			return false;
 		}
-		cout << "Variables no asignadas: " << graph->unassignedVars() << endl;
-	}
 
-	for(Variable* var : variables){
-		if(var->enabledNeighborhood().size() == 0 && !(var->isAssigned())){}
-			graph->assignVar(var, 1);
+		// Posiblemente hayan quedado variables que no son necesarias, por lo que
+		// les asignamos cualquier valor
+		for(Variable* var : variables){
+			if(var->enabledNeighborhood().size() == 0 && !(var->isAssigned())){
+				graph->clean(var);
+				graph->assignVar(var, 1);
+			}
+		}
+
 	}
 
 	return true;
