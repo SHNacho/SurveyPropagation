@@ -229,6 +229,7 @@ bool compareId(Variable* v1, Variable* v2){
 bool Graph::validate(vector<Variable*> asignacion){
 	sort(asignacion.begin(), asignacion.end(), compareId);
 	bool valida = true;
+	int counter = 0;
 
 	for(Function* f : functions){
 		bool satisfied = false;
@@ -236,12 +237,18 @@ bool Graph::validate(vector<Variable*> asignacion){
 			Variable* var = e->getVariable();
 			int id = var->getId();
 			bool var_value = asignacion[id-1]->getValue();
-			if(e->isNegated() != var_value) satisfied = true;
+			if(e->isNegated() != var_value && asignacion[id-1]->isAssigned()) satisfied = true;
 		}
-		if(!satisfied) return false;
+		if(satisfied){
+			counter++;
+		}
 	}
 
-	return true;
+	cout << "Cláusulas satisfechas: " << counter << endl;
+	if(counter == functions.size())
+		return true;
+	else
+		return false;
 }
 
 

@@ -51,39 +51,28 @@ void Edge::calculateProducts(){
 	
 	// Si la variable está negada en la clausula
 	if(negated){
-		if(pos_neigh.size() > 0)
-			for( Edge* neigh : pos_neigh )
+		for( Edge* neigh : pos_neigh )
+			if(neigh->getFunction() != this->function)
 				subproduct_u *= (1 - neigh->survey);
-		else
-			subproduct_u = 1.0;
 
-		if(neg_neigh.size() > 0)
-			for( Edge* neigh : neg_neigh )
+		for( Edge* neigh : neg_neigh )
+			if(neigh->getFunction() != this->function)
 				subproduct_s *= (1 - neigh->getSurvey());
-		else
-			subproduct_s = 1.0;
 	}
 	// Si la variable no está negada en la cláusula
 	else{
-		if(pos_neigh.size() > 0)
-			for( Edge* neigh : pos_neigh )
+		for( Edge* neigh : pos_neigh )
+			if(neigh->getFunction() != this->function)
 				subproduct_s *= (1 - neigh->survey);
-		else
-			subproduct_s = 1.0;
 
-		if(neg_neigh.size() > 0)
-			for( Edge* neigh : neg_neigh )
+		for( Edge* neigh : neg_neigh )
+			if(neigh->getFunction() != this->function)
 				subproduct_u *= (1 - neigh->getSurvey());
-		else
-			subproduct_u = 1.0;
 	}
 
-	if(total_neigh.size() > 0){
-		for( Edge* neigh : total_neigh ){
+	for( Edge* neigh : total_neigh ){
+		if(neigh->getFunction() != this->function)
 			subproduct_0 *= (1 - neigh->survey);
-		}
-	}else{
-		subproduct_0 = 1;
 	}
 
 	// Asignamos el valor de los productos a cada variable

@@ -9,13 +9,8 @@
 
 using namespace std;
 
-enum result { 
-	SP_UNCONVERGED, 
-	SP_CONVERGED,
-	CONTRADICTION,
-	NO_CONTRADICTION
-};
 
+//---------------------------------------------//
 bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	bool converged = true;
 
@@ -27,6 +22,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	for(Edge* e : edges){
 		e->setSurvey(Randfloat(0.0, 1.0));
 	}
+
 	bool next = false;
 	int t;
 	for(t = 1; t <= t_max && !next; ++t){
@@ -69,6 +65,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	return converged;
 }
 
+//---------------------------------------------//
 double SP_UPDATE(Edge* edge){
 	double survey = 1.0000;
 	vector<Edge*> neigh = edge->getFunction()->getEnabledNeighborhood();
@@ -90,6 +87,7 @@ double SP_UPDATE(Edge* edge){
 	return survey;
 }
 
+//---------------------------------------------//
 result unitPropagation(Graph* graph){
 	vector<Function*> functions = graph->getEnabledFunctions();
 	// Para cada cláusula
@@ -105,7 +103,7 @@ result unitPropagation(Graph* graph){
 			// Comprobamos si solo tiene una variable
 			// y si es así, asignamos el valor de dicha
 			// variable que satisfaga la cláusula
-			else if(neigh.size() == 1){
+			if(neigh.size() == 1 && !(f->isSatisfied())){
 				Variable* var = neigh[0]->getVariable();
 				if(neigh[0]->isNegated()){
 					// Si la variable ya está asignada y
@@ -129,6 +127,7 @@ result unitPropagation(Graph* graph){
 	return NO_CONTRADICTION;
 }
 
+//---------------------------------------------//
 bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 	for (int i = 0; i < MAX_TRIES; ++i){
 		// TODO:Asigación aleatoria
@@ -143,12 +142,21 @@ bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 			// TODO: Flip la variable que produzca la mejor variación
 		}
 	}
+
+	// TODO: cambiar
+	return true;
 }
 
+//---------------------------------------------//
 bool SID(Graph* graph, int t_max, float precision, float f){
 	int totalIt = 0;
 	vector<Edge*> edges = graph->getEnabledEdges();
 	vector<Variable*> variables = graph->getUnassignedVariables();
+
+	// Inicializamos las "survey" de manera aleatoria
+	//for(Edge* e : edges){
+	//	e->setSurvey(Randfloat(0.0, 1.0));
+	//}
 
 	result result_unit_prop = NO_CONTRADICTION;
 
@@ -181,7 +189,6 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 
 			int unassigned_vars = graph->unassignedVars();
 			int aux = unassigned_vars * f;
-			cout << "Vars to fix: " << aux << endl;
 			int n_vars_fix = (1 < aux) ? aux : 1;
 			
 			for(int i = 0; i < n_vars_fix; ++i){
@@ -220,4 +227,3 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	
 	return true;
 }
-

@@ -49,13 +49,13 @@ void Variable::setValue(bool val){
 		for(Edge* e : negativeNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
-			f->dissable();
+			//f->dissable();
 		}
 	} else if (value) {
 		for(Edge* e : positiveNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
-			f->dissable();
+			//f->dissable();
 		}
 	}
 

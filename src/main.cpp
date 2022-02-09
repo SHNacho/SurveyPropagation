@@ -15,22 +15,18 @@ int main (int argc, char *argv[]){
 	Graph g(file);
 	cout << file << ", ";
 	SID(&g, 1000, 0.001, f);
+	//unitPropagation(&g);
 
 	Graph aux(file);
 	if(aux.validate(g.getVariables()))
 		cout << "Correcto" << endl;
 
 
-	return 0;
-
 	//cout << endl << "=========Resultado=========" << endl;
-	//for(Variable* var : variables){
+	//for(Variable* var : g.getVariables()){
 	//	cout << "Variable " << var->getId() << " --> " << var->getValue() << endl;
 	//}
 
-	// TODO: en el cnf_easy.txt, el vecino de la variable con id=2 no se elimina
-	// y se debería eliminar al establecer el valor de la variable 1 a 0
-	//cout << variables[1]->getNeighborhood().size() << endl;
 
 
 
