@@ -75,6 +75,10 @@ class Graph
 		 * sobre la variable 'var'
 		 **/
 		int Break(Variable* var);
+		/**
+		 * Valida si una asignación es válida
+		 **/
+		bool validate(vector<Variable*> asignacion);
 	
 	private:
 		/**

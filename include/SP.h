@@ -6,7 +6,7 @@
 #include <vector>
 #include "graph.h"
 
-bool surveyPropagation(Graph grafo, int t_max, float precision);
+bool surveyPropagation(Graph grafo, int t_max, float precision, int & totalIt);
 
 double SP_UPDATE(Edge* edge);
 

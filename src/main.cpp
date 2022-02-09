@@ -10,12 +10,18 @@ int main (int argc, char *argv[]){
 	Set_random(29);
 	// Leemos el archivo donde se encuentra el problema SAT en CNF
 	string file = argv[1];
+	float f = atof(argv[2]);
 	// Generamos el grafo
 	Graph g(file);
+	cout << file << ", ";
+	SID(&g, 1000, 0.001, f);
 
-	SID(&g, 1000, 0.001, 0.04);
+	Graph aux(file);
+	if(aux.validate(g.getVariables()))
+		cout << "Correcto" << endl;
 
-	vector<Variable*> variables = g.getVariables();
+
+	return 0;
 
 	//cout << endl << "=========Resultado=========" << endl;
 	//for(Variable* var : variables){

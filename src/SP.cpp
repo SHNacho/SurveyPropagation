@@ -16,7 +16,7 @@ enum result {
 	NO_CONTRADICTION
 };
 
-bool surveyPropagation(Graph* graph, int t_max, float precision){
+bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	bool converged = true;
 
 	auto rng = std::default_random_engine {};
@@ -30,6 +30,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision){
 	bool next = false;
 	int t;
 	for(t = 1; t <= t_max && !next; ++t){
+		totalIt++;
 		//cout << "SP Iter: " << t << endl;
 		// Contador para contar el número de aristas que han
 		// alcanzado la precisión deseada
@@ -145,6 +146,7 @@ bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 }
 
 bool SID(Graph* graph, int t_max, float precision, float f){
+	int totalIt = 0;
 	vector<Edge*> edges = graph->getEnabledEdges();
 	vector<Variable*> variables = graph->getUnassignedVariables();
 
@@ -154,8 +156,9 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	while(graph->unassignedVars() > 0 &&
 		  result_unit_prop == NO_CONTRADICTION)
 	{
-		if(!surveyPropagation(graph, t_max, precision)){
-			cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
+		if(!surveyPropagation(graph, t_max, precision, totalIt)){
+			//cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
+			cout << "UNCONVERGED" << endl;
 			return false;
 		}
 
@@ -178,6 +181,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 
 			int unassigned_vars = graph->unassignedVars();
 			int aux = unassigned_vars * f;
+			cout << "Vars to fix: " << aux << endl;
 			int n_vars_fix = (1 < aux) ? aux : 1;
 			
 			for(int i = 0; i < n_vars_fix; ++i){
@@ -188,13 +192,14 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 		else{
 			
 			//walksat()
-			cout << "walksat" << endl;
+			cout << "WALKSAT" << endl;
 			return true;
 		}
 
 		result_unit_prop = unitPropagation(graph);
 		if(result_unit_prop == CONTRADICTION){
-			cout << "Se han encontrado contradicciones durante Unit Propagation" << endl;
+			//cout << "Se han encontrado contradicciones durante Unit Propagation" << endl;
+			cout << "CONTRADICTION" << endl;
 			return false;
 		}
 
@@ -207,9 +212,12 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 			}
 		}
 
+		//cout << "Aristas restantes: " << graph->getEnabledEdges().size() << endl;
+		//cout << "Variables restantes: " << graph->unassignedVars() << endl;
 	}
 
+	cout << "SAT, " << totalIt << endl;
+	
 	return true;
 }
-
 

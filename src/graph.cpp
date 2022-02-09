@@ -23,7 +23,6 @@ Graph::Graph(string file){
 	ifs.open(file, ifstream::in);
 
 	if(ifs.is_open()){
-		cout << "Generando factor graph..." << endl;
 	}
 
 	string line;
@@ -73,9 +72,9 @@ Graph::Graph(string file){
 
 	ifs.close();
 
-	cout << "Número de nodos variable: " << variables.size() << endl
-		 << "Número de nodos cláusula: " << functions.size()  << endl
-		 << "Número de aristas:        " << edges.size() << endl;
+	//cout << "Número de nodos variable: " << variables.size() << endl
+	//	 << "Número de nodos cláusula: " << functions.size()  << endl
+	//	 << "Número de aristas:        " << edges.size() << endl;
 }
 
 //----------------------------------------------//
@@ -166,7 +165,7 @@ void Graph::clean(Variable* fixed_var){
 	bool val = fixed_var->getValue();
 	for(Edge* e : fixed_var->getNeighborhood()){
 		if(e->isEnabled()){
-			if(val == e->isNegated())
+			if(val != e->isNegated())
 				e->getFunction()->dissable();
 			else 
 				e->dissable();
@@ -223,6 +222,27 @@ int Graph::Break(Variable* var){
 	
 }
 
+//----------------------------------------------//
+bool compareId(Variable* v1, Variable* v2){
+	return (v1->getId() < v2->getId());
+}
+bool Graph::validate(vector<Variable*> asignacion){
+	sort(asignacion.begin(), asignacion.end(), compareId);
+	bool valida = true;
+
+	for(Function* f : functions){
+		bool satisfied = false;
+		for(Edge* e : f->getNeighborhood()){
+			Variable* var = e->getVariable();
+			int id = var->getId();
+			bool var_value = asignacion[id-1]->getValue();
+			if(e->isNegated() != var_value) satisfied = true;
+		}
+		if(!satisfied) return false;
+	}
+
+	return true;
+}
 
 
 
