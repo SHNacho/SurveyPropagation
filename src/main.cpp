@@ -14,7 +14,7 @@ int main (int argc, char *argv[]){
 	// Generamos el grafo
 	Graph g(file);
 	cout << file << ", ";
-	SID(&g, 1000, 0.001, f);
+	SID(&g, 10000, 0.001, f);
 	//unitPropagation(&g);
 
 	Graph aux(file);

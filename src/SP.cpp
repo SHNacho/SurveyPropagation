@@ -30,7 +30,6 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	for(t = 1; t <= t_max && !next; ++t){
 		updateOldSurvey(graph);
 		totalIt++;
-		//cout << "SP Iter: " << t << endl;
 		// Contador para contar el número de aristas que han
 		// alcanzado la precisión deseada
 		int counter = 0;
@@ -43,10 +42,10 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 				double prev_survey = e->getSurvey();
 				SP_UPDATE(e);
 				// Comprobamos si converge
-				if(t > 200){
-					cout << "Arista " << e->getFunction()->getId() << "-" << e->getVariable()->getId() << endl;
-					cout << "Diferencia: " << e->getSurvey() << " - " << prev_survey << " = " << abs(e->getSurvey() - prev_survey) << endl;
-				}
+	//			if(t > 200){
+	//				cout << "Arista " << e->getFunction()->getId() << "-" << e->getVariable()->getId() << endl;
+	//				cout << "Diferencia: " << e->getSurvey() << " - " << prev_survey << " = " << abs(e->getSurvey() - prev_survey) << endl;
+	//			}
 				if(abs(e->getSurvey() - prev_survey) < precision){
 					e->setConverged(true);
 					counter++;
@@ -56,13 +55,22 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 			}
 		}
 		
+		//cout << "SP Iter: " << t << endl;
+		//cout << "Aristas convergidas: " << counter << endl;
 		// Si han convergido todas las aristas 
 		if(counter == edges.size())
 			next = true;	
 	}
 	
-	if(t >= t_max)
+	if(t >= t_max){
 		converged = false;
+		for(Edge* e : edges){
+			if(abs(e->getSurvey() - e->oldSurvey) > precision){
+				cout << "Arista " << e->getFunction()->getId() << "-" << e->getVariable()->getId() << endl;
+				cout << "Diferencia: " << e->getSurvey() << " - " << e->oldSurvey << " = " << abs(e->getSurvey() - e->oldSurvey) << endl;
+			}
+		}
+	}
 
 	// Reestablecemos de nuevo la variable de convergencia de las aristas
 	for(Edge* e : edges){
@@ -91,8 +99,11 @@ double SP_UPDATE(Edge* edge){
 			Variable* var = n->getVariable();
 			if(var != edge->getVariable()){
 				n->calculateProducts();
-				survey = survey * (var->getPu() /
-						  (var->getPu() + var->getPs() + var->getP0()));
+				if(var->getPu() == 0) 
+					survey = 0;
+				else
+					survey *= (var->getPu() / (var->getPu() + var->getPs() + var->getP0()));
+				
 			}	
 		}
 	}
