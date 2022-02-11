@@ -30,6 +30,12 @@ class Variable
 		double pu;
 		double p0;
 
+		// Subproductos
+		double sub_s;
+		double sub_u;
+		double sub_0;
+
+
 		// Sesgos
 		double negativeBias;
 		double positiveBias;
@@ -44,6 +50,7 @@ class Variable
 		double calculateBias();
 		void fix();
 		void removeNeighbor(int func_id);
+		void computeSubproducts();
 
 		/////////////////////////
 		// Setters and getters //

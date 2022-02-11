@@ -121,15 +121,15 @@ double Variable::calculateBias(){
 		   negative_aux = 0.0,
 		   null_aux     = 0.0;
 
-	for(Edge* neigh : this->positiveNeighborhood){
+	for(Edge* neigh : this->enabledPositiveNeighborhood()){
 		positive_subprod *= (1 - neigh->getSurvey());
 	}
 
-	for(Edge* neigh : this->negativeNeighborhood){
+	for(Edge* neigh : this->enabledNegativeNeighborhood()){
 		negative_subprod *= (1 - neigh->getSurvey());
 	}
 
-	for(Edge* neigh : this->neighborhood){
+	for(Edge* neigh : this->enabledNeighborhood()){
 		subprod *= (1 - neigh->getSurvey());
 	}
 

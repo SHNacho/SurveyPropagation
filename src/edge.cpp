@@ -7,7 +7,7 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->variable = variable;
 	this->function = function;
 	this->negated = negated;
-	this->survey = Randfloat(0.0000, 1.0000);
+	this->survey = oldSurvey = Randfloat(0.0000, 1.0000);
 	this->converged = false;
 	this->enabled = true;
 }
@@ -51,28 +51,30 @@ void Edge::calculateProducts(){
 	
 	// Si la variable está negada en la clausula
 	if(negated){
+		// Bucle sobre los vecinos en los que no aparece negada
 		for( Edge* neigh : pos_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_u *= (1 - neigh->survey);
-
+				subproduct_u *= (1 - neigh->oldSurvey);
+		// Bucle sobre los vecinos en los que aparece negada
 		for( Edge* neigh : neg_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_s *= (1 - neigh->getSurvey());
+				subproduct_s *= (1 - neigh->oldSurvey);
 	}
 	// Si la variable no está negada en la cláusula
 	else{
+		// Bucle sobre los vecinos en los que no aparece negada
 		for( Edge* neigh : pos_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_s *= (1 - neigh->survey);
-
+				subproduct_s *= (1 - neigh->oldSurvey);
+		// Bucle sobre los vecinos en los que aparece negada
 		for( Edge* neigh : neg_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_u *= (1 - neigh->getSurvey());
+				subproduct_u *= (1 - neigh->oldSurvey);
 	}
 
 	for( Edge* neigh : total_neigh ){
 		if(neigh->getFunction() != this->function)
-			subproduct_0 *= (1 - neigh->survey);
+			subproduct_0 *= (1 - neigh->oldSurvey);
 	}
 
 	// Asignamos el valor de los productos a cada variable
@@ -80,6 +82,12 @@ void Edge::calculateProducts(){
 	variable->setPs((1-subproduct_s)*subproduct_u);
 	variable->setP0(subproduct_0);
 }
+
+void Edge::initRandomSurvey(){
+	survey = oldSurvey = Randfloat(0.0, 1.0);
+}
+
+
 
 
 

@@ -19,6 +19,8 @@ class Edge
 		bool converged;
 
 	public:
+		double oldSurvey;
+
 		Edge(Variable* variable, Function* function, bool negated);
 		void setSurvey(double survey);
 		void setConverged(bool conv);
@@ -30,8 +32,9 @@ class Edge
 		Variable* getVariable();
 		Function* getFunction();
 		void calculateProducts();
-	private:
 		void initRandomSurvey();
+	
+	private:
 };
 
 #endif //EDGE_H

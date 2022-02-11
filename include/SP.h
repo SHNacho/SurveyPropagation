@@ -13,12 +13,12 @@ enum result {
 	NO_CONTRADICTION
 };
 
-bool surveyPropagation(Graph grafo, int t_max, float precision, int & totalIt);
-
-result unitPropagation(Graph* graph);
-
-double SP_UPDATE(Edge* edge);
-
 bool SID(Graph* graph, int t_max, float precision, float f);
+bool surveyPropagation(Graph grafo, int t_max, float precision, int & totalIt);
+double SP_UPDATE(Edge* edge);
+result unitPropagation(Graph* graph);
+void calculateProducts(Graph* graph);
+void updateOldSurvey(Graph* graph);
+void randomInit(Graph* graph);
 
 #endif //SP_H

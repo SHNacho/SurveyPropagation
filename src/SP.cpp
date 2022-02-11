@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ostream>
 #include <random>
 #include <algorithm>
 #include <iterator>
@@ -18,14 +19,16 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 
 	vector<Edge*> edges = graph->getEnabledEdges();
 
+	int t = 0;
 	// Inicializamos las "survey" de manera aleatoria
-	for(Edge* e : edges){
-		e->setSurvey(Randfloat(0.0, 1.0));
-	}
+	randomInit(graph);
 
 	bool next = false;
-	int t;
+	
+	//calculateProducts(graph);
+
 	for(t = 1; t <= t_max && !next; ++t){
+		updateOldSurvey(graph);
 		totalIt++;
 		//cout << "SP Iter: " << t << endl;
 		// Contador para contar el número de aristas que han
@@ -40,6 +43,10 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 				double prev_survey = e->getSurvey();
 				SP_UPDATE(e);
 				// Comprobamos si converge
+				if(t > 200){
+					cout << "Arista " << e->getFunction()->getId() << "-" << e->getVariable()->getId() << endl;
+					cout << "Diferencia: " << e->getSurvey() << " - " << prev_survey << " = " << abs(e->getSurvey() - prev_survey) << endl;
+				}
 				if(abs(e->getSurvey() - prev_survey) < precision){
 					e->setConverged(true);
 					counter++;
@@ -53,8 +60,8 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 		if(counter == edges.size())
 			next = true;	
 	}
-
-	if(t == t_max)
+	
+	if(t >= t_max)
 		converged = false;
 
 	// Reestablecemos de nuevo la variable de convergencia de las aristas
@@ -64,6 +71,15 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 
 	return converged;
 }
+
+//---------------------------------------------//
+void updateOldSurvey(Graph* graph){
+	vector<Edge*> edges = graph->getEnabledEdges();
+	for(Edge* e : edges){
+		e->oldSurvey = e->getSurvey();
+	}
+}
+
 
 //---------------------------------------------//
 double SP_UPDATE(Edge* edge){
@@ -227,3 +243,11 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	
 	return true;
 }
+
+//---------------------------------------------//
+void randomInit(Graph* graph){
+	for(Edge* e : graph->getEnabledEdges()){
+		e->initRandomSurvey();
+	}
+}
+
