@@ -99,7 +99,7 @@ double SP_UPDATE(Edge* edge){
 			Variable* var = n->getVariable();
 			if(var != edge->getVariable()){
 				n->calculateProducts();
-				if(var->getPu() == 0) 
+				if(var->getPu() <= 0.000001) 
 					survey = 0;
 				else
 					survey *= (var->getPu() / (var->getPu() + var->getPs() + var->getP0()));
@@ -185,7 +185,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	//	e->setSurvey(Randfloat(0.0, 1.0));
 	//}
 
-	result result_unit_prop = NO_CONTRADICTION;
+	result result_unit_prop = unitPropagation(graph);
 
 	int count = 0;
 	while(graph->unassignedVars() > 0 &&

@@ -3,6 +3,7 @@
 #include "function.h"
 #include "random.h"
 
+//--------------------------------//
 Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->variable = variable;
 	this->function = function;
@@ -12,33 +13,32 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->enabled = true;
 }
 
+//--------------------------------//
 void Edge::setSurvey(double survey){
 	this->survey = survey;
 }
 
+//--------------------------------//
 void Edge::setConverged(bool conv){
 	converged = conv;
 }
 
+//--------------------------------//
 const double Edge::getSurvey(){
 	return this->survey;
 }
 
+//--------------------------------//
 Variable* Edge::getVariable(){
 	return this->variable;
 }
 
+//--------------------------------//
 Function* Edge::getFunction(){
 	return this->function;
 }
 
-//TODO: Se puede optimizar ya que en cada iteración de SP_UPDATE
-//		se llama a esta función para todas las aristas, por lo que 
-//		podemos almacenar los subproductos en las variables
-//		y no se repite el cálculo si dos aristas tienen la misma
-//		variable.
-//		Este cálculo no valdría para la siguiente llamada a 
-//		SP_UPDATE
+//--------------------------------//
 void Edge::calculateProducts(){
 	double subproduct_u = 1.0,
 		   subproduct_s = 1.0,
@@ -83,6 +83,7 @@ void Edge::calculateProducts(){
 	variable->setP0(subproduct_0);
 }
 
+//--------------------------------//
 void Edge::initRandomSurvey(){
 	survey = oldSurvey = Randfloat(0.0, 1.0);
 }

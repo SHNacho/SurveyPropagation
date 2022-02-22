@@ -141,6 +141,10 @@ double Variable::calculateBias(){
 	negativeBias = negative_aux / (positive_aux + negative_aux + null_aux);
 	nullBias     = 1 - positiveBias - negativeBias;
 
+	if(positiveBias > 1.0 || negativeBias > 1.0 || nullBias > 1.0){
+		cout << "Error!!!" << endl;
+	}
+
 	return (positiveBias - negativeBias);
 }
 

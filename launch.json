@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+	{
+    	"name" : "Launch",
+   		"type" : "lldb",
+   	 	"request" : "launch",
+   	 	"program" : "${workspaceFolder}/bin/main_exe",
+   	 	"cwd" : "${workspaceFolder}",
+   	 	"stopOnEntry" : false,
+   	 	"args" : { "${workspaceFolder}/cnf_medium.txt", "0.04"},
+   	 	"runInTerminal" : false
+   }
+  ]
+}
