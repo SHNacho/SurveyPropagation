@@ -54,27 +54,27 @@ void Edge::calculateProducts(){
 		// Bucle sobre los vecinos en los que no aparece negada
 		for( Edge* neigh : pos_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_u *= (1 - neigh->oldSurvey);
+				subproduct_u *= (1 - neigh->survey);
 		// Bucle sobre los vecinos en los que aparece negada
 		for( Edge* neigh : neg_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_s *= (1 - neigh->oldSurvey);
+				subproduct_s *= (1 - neigh->survey);
 	}
 	// Si la variable no está negada en la cláusula
 	else{
 		// Bucle sobre los vecinos en los que no aparece negada
 		for( Edge* neigh : pos_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_s *= (1 - neigh->oldSurvey);
+				subproduct_s *= (1 - neigh->survey);
 		// Bucle sobre los vecinos en los que aparece negada
 		for( Edge* neigh : neg_neigh )
 			if(neigh->getFunction() != this->function)
-				subproduct_u *= (1 - neigh->oldSurvey);
+				subproduct_u *= (1 - neigh->survey);
 	}
 
 	for( Edge* neigh : total_neigh ){
 		if(neigh->getFunction() != this->function)
-			subproduct_0 *= (1 - neigh->oldSurvey);
+			subproduct_0 *= (1 - neigh->survey);
 	}
 
 	// Asignamos el valor de los productos a cada variable

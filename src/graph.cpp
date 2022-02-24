@@ -46,7 +46,7 @@ Graph::Graph(string file){
 	this->variables.reserve(n);
 	this->functions.reserve(m);
 	this->edges.reserve(m * k);
-	this->enabled_edges = 0;
+	this->enabled_edges = m*k;
 
 	// inicializamos las variables y cláusulas
 	// rellenando el vector de variables de 1 a n

@@ -99,7 +99,7 @@ double SP_UPDATE(Edge* edge){
 			Variable* var = n->getVariable();
 			if(var != edge->getVariable()){
 				n->calculateProducts();
-				if(var->getPu() <= 0.000001) 
+				if(var->getPu() <= 0.0000001) 
 					survey = 0;
 				else
 					survey *= (var->getPu() / (var->getPu() + var->getPs() + var->getP0()));
