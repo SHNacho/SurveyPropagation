@@ -114,6 +114,15 @@ double SP_UPDATE(Edge* edge){
 	return survey;
 }
 
+double SP_UPDATE2(Edge* edge){
+	double survey = 1.0000;
+	Function* clause = edge->getFunction();
+
+	for()
+
+	return survey;
+}
+
 //---------------------------------------------//
 result unitPropagation(Graph* graph){
 	vector<Function*> functions = graph->getEnabledFunctions();
