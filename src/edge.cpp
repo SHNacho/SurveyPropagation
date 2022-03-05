@@ -11,30 +11,6 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->converged = false;
 }
 
-Edge::~Edge(){
-	variable->removeNeighbor(function->getId());
-}
-
-void Edge::setSurvey(double survey){
-	this->survey = survey;
-}
-
-void Edge::setConverged(bool conv){
-	converged = conv;
-}
-
-const double Edge::getSurvey(){
-	return this->survey;
-}
-
-Variable* Edge::getVariable(){
-	return this->variable;
-}
-
-Function* Edge::getFunction(){
-	return this->function;
-}
-
 void Edge::calculateProducts(){
 	double subproduct_u = 1.0,
 		   subproduct_s = 1.0,

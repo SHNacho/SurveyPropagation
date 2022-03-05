@@ -9,7 +9,12 @@ class Function;
 
 class Edge
 {
-	private:
+
+
+	public:
+		//==========================//
+		// Declaración de variables //
+		//==========================//
 		Variable* variable;
 		Function* function;
 
@@ -17,18 +22,14 @@ class Edge
 		double survey;
 		bool converged;
 
-	public:
+		bool enabled;
+
+		//==========================//
+		// Declaración de funciones //
+		//==========================//
 		Edge(Variable* variable, Function* function, bool negated);
-		void setSurvey(double survey);
-		void setConverged(bool conv);
-		bool hasConverged(){return converged;}
-		const double getSurvey();
-		const bool isNegated(){return negated;};
-		Variable* getVariable();
-		Function* getFunction();
 		void calculateProducts();
-		// TODO
-		~Edge();
+		inline void Dissable(){enabled = false;}
 	private:
 		void initRandomSurvey();
 };
