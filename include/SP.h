@@ -6,10 +6,16 @@
 #include <vector>
 #include "graph.h"
 
-bool surveyPropagation(Graph grafo, int t_max, float precision);
+class Solver{
 
-double SP_UPDATE(Edge* edge);
+	public:
+		bool SID(Graph* graph, int t_max, float precision);
+		bool surveyPropagation(Graph grafo, int t_max, float precision);
+		
+		double SP_UPDATE(Edge* edge);
+		void calculateProducts();
+		bool clean(Variable* var);
+		bool unitPropagation(Function* clause);
 
-bool SID(Graph* graph, int t_max, float precision);
-
+}
 #endif //SP_H

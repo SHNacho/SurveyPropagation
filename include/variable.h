@@ -7,11 +7,20 @@
 using namespace std;
 class Edge;
 
+enum lbool{
+	True = 1,
+	False = 0,
+	Unassigned = -1
+};
+
 class Variable 
 {
-	private:
+	public:
+		//==========================//
+		// Declaración de variables //
+		//==========================//
 		int id; 
-		int value;
+		lbool value;
 		// Conjunto de nodos vecinos (nodos función)
 		// se identifican por su arista
 		vector<Edge*> neighborhood;
@@ -32,29 +41,16 @@ class Variable
 		double positiveBias;
 		double nullBias;
 
-		// Productos para el cálculo de los sesgos 
-
-	public:
+		//==========================//
+		// Declaración de funciones //
+		//==========================//
 		Variable(int id);
-		void setValue(int val);
-		int getId(){return id;}
-		int getValue(){return value;}
-		vector<Edge*>& getNeighborhood(){return neighborhood;};
-		vector<Edge*>& getPosNeighborhood(){return positiveNeighborhood;}
-		vector<Edge*>& getNegNeighborhood(){return negativeNeighborhood;}
-		double getPs(){return ps;}
-		double getPu(){return pu;}
-		double getP0(){return p0;}
-		double getPosBias(){return positiveBias;}
-		double getNegBias(){return negativeBias;}
-		double getNullBias(){return nullBias;}
-		void setPs(double ps);
-		void setPu(double pu);
-		void setP0(double p0);
 		void addNeighbor (Edge* neigh);
+		vector<Edge*> enabledNeighborhood();
 		double calculateBias();
+		void setValue(const lbool value);
+		void setValue(const bool value);
 		void fix();
-		void removeNeighbor(int func_id);
 
 		friend bool operator==(const Variable& lhs, const Variable& rhs);
 };
