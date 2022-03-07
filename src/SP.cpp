@@ -16,76 +16,7 @@ enum result {
 	NO_CONTRADICTION
 };
 
-bool surveyPropagation(Graph* graph, int t_max, float precision){
-	bool converged = true;
 
-	auto rng = std::default_random_engine {};
-
-	vector<Edge*> edges = graph->getEdges();
-
-	bool next = false;
-	int t;
-	for(t = 1; t <= t_max && !next; ++t){
-		cout << "SP iter: " << t << endl;
-		// Contador para contar el número de aristas que han
-		// alcanzado la precisión deseada
-		int counter = 0;
-		// Recorremos las aristas de manera aleatoria
-		shuffle(std::begin(edges), std::end(edges), rng);
-		for(Edge* e : edges){
-			if(!(e->hasConverged())){
-				// Actualizamos el mensaje para cada arista
-				double prev_survey = e->getSurvey();
-				e->setSurvey(SP_UPDATE(e));
-
-//				cout << "Survey anterior: " << prev_survey << endl;
-//				cout << "Survey actual:   " << e->getSurvey() << endl;
-//				cout << "Diferencia:      " << e->getSurvey() - prev_survey << endl;
-				
-				if(abs(e->getSurvey() - prev_survey) < precision){
-					e->setConverged(true);
-				}
-//				cout << "Diferencia: " << abs(e->getSurvey() - prev_survey) << endl;
-			} else {
-				counter++;
-			}
-		}
-
-		if(counter == edges.size())
-			next = true;	
-	}
-
-	if(t == t_max)
-		converged = false;
-
-	// Reestablecemos de nuevo la variable de convergencia de las aristas
-	for(Edge* e : edges){
-		e->setConverged(false);
-	}
-
-	return converged;
-}
-
-double SP_UPDATE(Edge* edge){
-	double survey = 1.0000;
-	vector<Edge*> neigh = edge->getFunction()->getNeighborhood();
-
-	if(neigh.size() != 0){
-		for(Edge* n : neigh){
-			Variable* var = n->getVariable();
-			if(var != edge->getVariable()){
-				n->calculateProducts();
-				survey = survey * (var->getPu() /
-						  (var->getPu() + var->getPs() + var->getP0()));
-			}
-			
-		}
-	}
-
-
-//	cout << "Survey calculada: " << survey << endl;
-	return survey;
-}
 
 result unitPropagation(Graph* graph){
 	vector<Function*> functions = graph->getFunctions();

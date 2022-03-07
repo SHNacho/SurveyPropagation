@@ -26,7 +26,7 @@ class Function
 		// Declaración de funciones //
 		//==========================//
 		Function(int id);
-		inline void satisfy(){satisfied = true;}
+		void satisfy();
 		void addNeighbor(Edge* neigh);
 		vector<Edge*> enabledNeighborhood();
 };

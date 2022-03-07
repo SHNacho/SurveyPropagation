@@ -13,6 +13,14 @@ void Function::addNeighbor(Edge* neigh){
 	enabled_edges++;
 }
 
+void Function::satisfy(){
+	satisfied = true;
+
+	for(Edge* e : neighborhood)
+		if(e -> enabled)
+			e->Dissable();
+}
+
 vector<Edge*> Function::enabledNeighborhood(){
 	vector<Edge*> enabled_neigh;
 	for(Edge* n : neighborhood)

@@ -17,21 +17,32 @@ using namespace std;
  */
 class Graph 
 {
-	private:
+	public:
+		//==========================//
+		// Declaración de variables //
+		//==========================//
 		vector<Edge*> edges;
 		vector<Variable*> variables;
 		vector<Function*> functions;
+
 		int unassigned_vars;
 
-	public:
+		//==========================//
+		// Declaración de funciones //
+		//==========================//
 		Graph(string file);
-		vector<Edge*>& getEdges(){return edges;}
-		vector<Variable*>& getVariables(){return variables;}
-		vector<Function*>& getFunctions(){return functions;}
 		/**
 		 * Devuelve el número de variables no asignadas
 		 **/
-		int unassignedVars(){return unassigned_vars;}
+		vector<Variable*> unassignedVars();
+		/**
+		 * Devuelve las aristas que aún continuan en el grafo
+		 **/
+		vector<Edge*> enabledEdges();		
+		/**
+		 * Devuelve las cláusulas que aún no han sido satisfechas
+		 **/
+		vector<Function*> unsatisfiedFunctions();		
 		/**
 		 * Añade una arista al grafo
 		 **/

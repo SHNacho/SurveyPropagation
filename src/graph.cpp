@@ -90,6 +90,32 @@ void Graph::addEdge(Variable* var, Function* func, bool neg){
 }
 
 //----------------------------------------------//
+vector<Variable*> Graph::unassignedVars(){
+	vector<Variable*> unassigned_vars;
+	for(Variable* v : variables)
+		if(v->value != Unassigned)
+			unassigned_vars.push_back(v);
+	return unassigned_vars;
+}
+
+//----------------------------------------------//
+vector<Edge*> Graph::enabledEdges(){
+	vector<Edge*> enabled_edges;
+	for(Edge* e : edges)
+		if(e->enabled)
+			enabled_edges.push_back(e);
+	return enabled_edges;
+}
+
+//----------------------------------------------//
+vector<Function*> Graph::unsatisfiedFunctions(){
+	vector<Function*> enabled_functions;
+	for(Function* f : functions)
+		if(!f->satisfied)
+			enabled_functions.push_back(f);
+	return enabled_functions;
+}
+//----------------------------------------------//
 void Graph::assignVar(Variable* var, int val){
 	if(val == -1)
 		var->fix();

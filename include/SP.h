@@ -6,7 +6,7 @@
 #include <vector>
 #include "graph.h"
 
-class Solver{
+class SolverSP{
 
 	public:
 		bool SID(Graph* graph, int t_max, float precision);
@@ -17,5 +17,5 @@ class Solver{
 		bool clean(Variable* var);
 		bool unitPropagation(Function* clause);
 
-}
+};
 #endif //SP_H
