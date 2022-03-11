@@ -9,13 +9,67 @@
 
 using namespace std;
 
-enum result { 
-	SP_UNCONVERGED, 
-	SP_CONVERGED,
-	CONTRADICTION,
-	NO_CONTRADICTION
-};
 
+result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
+
+	totalIt = 0;
+	vector<Edge*> edges = graph->enabledEdges();
+
+	int unassigned_vars = graph->unassigned_vars;
+	int n_vars_fix = unassigned_vars * f;
+	n_vars_fix = (1 < n_vars_fix) ? n_vars_fix : 1;
+
+	while(true){
+		totalIt++;
+		// Llamamos a la rutina SP
+		result result_sp = surveyPropagation(graph, t_max, precision);
+		if(result_sp != SP_CONVERGED) return result_sp;
+
+		// Comprobamos si el problema es trivial
+		bool trivial = true;
+		for(int i = 0; i < edges.size() && trivial; ++i){
+			if (edges[i]->survey != 0.00)
+				trivial = false;
+		}
+
+		if(!trivial){
+			vector<Variable*> unassignedVars = graph->unassignedVars();
+			
+			for(Variable* var : unassignedVars){
+				computeBias(var);
+			}
+
+			sort(unassignedVars.begin(), unassignedVars.end(), compareVars);
+
+			int auxAssign = n_vars_fix;
+    		for (int i = 0; i < auxAssign; i++) {
+    		  	// Variables in the list can be already assigned due to UP being executed
+    		  	// in previous iterations
+    		  	if (unassignedVars[i]->value != Unassigned) {
+    		  	  auxAssign++;  // Don't count this variable as a new assignation
+    		  	  continue;
+    		  	}
+
+    		  	// Found the new value and assign the variable
+    		  	// The assignation method cleans the graph and execute UP if one of
+    		  	// the cleaned clause become unitary
+    		  	Variable* var = unassignedVars[i];
+
+    		  	// Recalculate biases for same reason, previous assignations clean the
+    		  	// graph and change relations
+    		  	computeBias(var);
+    		  	lbool newValue = var->negativeBias > var->positiveBias ? False : True;
+
+    		  	if (!assignVariable(var, newValue)) {
+    		  	  // Error found when assigning variable
+    		  	  return CONTRADICTION;
+    		  	}
+    		}
+    	}
+
+		//TODO Comprobar si se ha satisfecho la fórmula
+	}
+}
 
 
 result unitPropagation(Graph* graph){

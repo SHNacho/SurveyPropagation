@@ -55,5 +55,7 @@ class Variable
 		friend bool operator==(const Variable& lhs, const Variable& rhs);
 };
 
+bool compareVars(Variable* v1, Variable* v2);
+
 
 #endif //VARIABLE_H

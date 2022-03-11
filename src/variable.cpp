@@ -80,6 +80,22 @@ bool operator==(const Variable& lhs, const Variable& rhs){
 	return lhs.id == rhs.id;
 }
 
+bool compareVars(Variable* v1, Variable* v2){
+	double v1_pbias = v1->positiveBias;
+	double v1_nbias = v1->negativeBias;
+	double v2_pbias = v2->positiveBias;
+	double v2_nbias = v2->negativeBias;
+
+	double v1_diff = abs(v1_pbias - v1_nbias);
+	double v2_diff = abs(v2_pbias - v2_nbias);
+
+	// Si v1 ya está asignada la mandamos al final
+	if(v1->value != Unassigned)return false;
+	// Si v2 ya está asignada, v1 va delante
+	if(v2->value != Unassigned) return true;
+
+	return (v1_diff > v2_diff);
+}
 
 
 
