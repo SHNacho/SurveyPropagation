@@ -17,15 +17,22 @@ class SolverSP{
 
 	public:
 		int totalIt;
+		double ZERO = 0.000001;
 
 		result SID(Graph* graph, int t_max, float precision, float f);
 		result surveyPropagation(Graph* grafo, int t_max, float precision);	
-		double SP_UPDATE(Edge* edge);
+		double SP_UPDATE(Function* clause);
 		void calculateProducts();
 		bool clean(Variable* var);
 		bool unitPropagation(Function* clause);
 		void computeBias(Variable* var);
 		bool assignVariable(Variable* var, lbool value);
+		/**
+		 * Para cada variable i del grafo, calcula los productos
+		 * Pi(1 - eta->j), j in V+(i)
+		 * Pi(1 - eta->j), j in V-(i)
+		 **/
+		void computeSubProducts(Graph* graph);
 
 };
 #endif //SP_H

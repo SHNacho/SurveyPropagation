@@ -32,43 +32,114 @@ result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 				trivial = false;
 		}
 
+		// Si no es trivial
 		if(!trivial){
 			vector<Variable*> unassignedVars = graph->unassignedVars();
-			
+			// Para cada variable no asignada calculamos los sesgos
 			for(Variable* var : unassignedVars){
 				computeBias(var);
 			}
-
+			// Las ordenamos en función de sus sesgos
 			sort(unassignedVars.begin(), unassignedVars.end(), compareVars);
-
+			
 			int auxAssign = n_vars_fix;
+			// Fijamos las n variables que mayor sesgo tengan
     		for (int i = 0; i < auxAssign; i++) {
-    		  	// Variables in the list can be already assigned due to UP being executed
-    		  	// in previous iterations
+				// Las variables pueden haber sido asignadas por UP ya que al
+				// asignar una variable, se limpia el grafo y se llama a UP
     		  	if (unassignedVars[i]->value != Unassigned) {
-    		  	  auxAssign++;  // Don't count this variable as a new assignation
+    		  	  auxAssign++;  
     		  	  continue;
     		  	}
 
-    		  	// Found the new value and assign the variable
-    		  	// The assignation method cleans the graph and execute UP if one of
-    		  	// the cleaned clause become unitary
     		  	Variable* var = unassignedVars[i];
 
     		  	// Recalculate biases for same reason, previous assignations clean the
     		  	// graph and change relations
+				// Recalculamos los biases ya que la anterior asignación puede
+				// provocar que se modifiquen
     		  	computeBias(var);
-    		  	lbool newValue = var->negativeBias > var->positiveBias ? False : True;
 
-    		  	if (!assignVariable(var, newValue)) {
-    		  	  // Error found when assigning variable
-    		  	  return CONTRADICTION;
+				// Calculamos el valor que se le va a asignar a la variable en función
+				// de sus sesgos
+    		  	lbool val= var->negativeBias > var->positiveBias ? False : True;
+				
+				// Asignamos la variable
+    		  	if (!assignVariable(var, val)) {
+					// Error si la variable ya ha sido asignada
+    		  	  	return CONTRADICTION;
     		  	}
     		}
     	}
 
 		//TODO Comprobar si se ha satisfecho la fórmula
 	}
+}
+
+result SolverSP::surveyPropagation(Graph* graph, int t_max, float precision){
+
+	auto rng = std::default_random_engine {};
+
+	// Calculate subproducts of all variables
+  	computeSubProducts(graph);
+  	for (int i = 0; i < t_max; i++) {
+  	  	// Randomize clause iteration
+  	  	vector<Function*> unsatisfiedClauses = graph->unsatisfiedFunctions();
+  	  	shuffle(unsatisfiedClauses.begin(), unsatisfiedClauses.end(), rng);
+
+  	  	// Calculate surveys
+  	  	double maxConvergeDiff = 0.0;
+  	  	for (Function* clause : unsatisfiedClauses) {
+  	  	  	double maxConvDiffInClause = SP_UPDATE(clause);
+
+  	  	  	// Save max convergence diff
+  	  	  	if (maxConvDiffInClause > maxConvergeDiff)
+  	  	  	  	maxConvergeDiff = maxConvDiffInClause;
+  	  	}
+
+  	  	// Check if converged
+  	  	if (maxConvergeDiff <= precision) {
+  	  	  	return SP_CONVERGED;
+  	  	}
+  	}
+  	// cout << ":-(" << endl;
+  	// Max itertions reach without convergence
+  	return SP_UNCONVERGED;
+}
+
+void SolverSP::computeSubProducts(Graph* graph){
+	for(Variable* var : graph->variables){
+		if(var->value == Unassigned){
+			var->ps = 1.0;
+			var->ns = 1.0;
+			var->pzero = 0;
+			var->nzero = 0;
+		
+
+			//TODO ¿Tendría que actualizar ps cuando la arista es positiva??
+			for(Edge* edge : var->neighborhood){
+				if(edge->enabled){
+					double diff = 1.0 - edge->survey;
+					if(edge->negated){
+						if(diff > ZERO)
+							var->ps *= diff; 
+						else
+							var->pzero++;
+					}
+					else{
+						if(diff > ZERO)
+							var->ns *= diff;
+						else
+							var->nzero++;
+					}
+				}
+			}
+		}
+	}
+}
+
+double SolverSP::SP_UPDATE(Function* clause){
+
 }
 
 
@@ -100,87 +171,6 @@ result unitPropagation(Graph* graph){
 	return NO_CONTRADICTION;
 }
 
-bool SID(Graph* graph, int t_max, float precision){
-	vector<Edge*> edges = graph->getEdges();
-	vector<Variable*> variables = graph->getVariables();
 
-	vector<int> assign(variables.size(), -1);
-
-	// Inicializamos las "survey" de manera aleatoria
-	for(Edge* e : edges){
-		e->setSurvey(Randfloat(0.0, 1.0));
-	}
-
-
-
-	result result_unit_prop = NO_CONTRADICTION;
-	bool converge = true;
-
-	int count = 0;
-	while(graph->unassignedVars() > 0 &&
-		  result_unit_prop == NO_CONTRADICTION &&
-		  converge)
-	{
-		converge = surveyPropagation(graph, t_max, precision);
-		if(converge == false){
-			cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
-			return false;
-		}
-
-		bool trivial = true;
-
-		for(int i = 0; i < edges.size() && trivial; ++i){
-			if (edges[i]->getSurvey() != 0.00)
-				trivial = false;
-		}
-
-		cout << "No es trivial" << endl;
-
-		// Si hay "surveys" que no sean triviales
-		double max_bias = 0.0;
-		double pos_max_bias = 0;
-		if(trivial == false){
-			for(int i = 0; i < variables.size(); ++i){
-				if(variables[i]->getValue() == -1){
-					double bias = variables[i]->calculateBias();
-					if(abs(bias) >= max_bias){
-						max_bias = abs(bias);
-						pos_max_bias = i;
-					}
-				}
-			}
-
-			Variable* aux = variables[pos_max_bias];
-			graph->assignVar(aux);
-
-			
-
-			// Introducimos la asignación en el vector solución
-			assign[aux->getId()] = aux->getValue();
-			
-			graph->clean(variables[pos_max_bias]);
-			cout << "Se limpia el grafo. Número de aristas: " << graph->getEdges().size() << endl; 
-		}
-		else{
-			//walksat()
-			cout << "walksat" << endl;
-			return true;
-		}
-
-		result_unit_prop = unitPropagation(graph);
-		if(result_unit_prop == CONTRADICTION){
-			cout << "Se han encontrado contradicciones durante Unit Propagation" << endl;
-			return false;
-		}
-		cout << "Variables no asignadas: " << graph->unassignedVars() << endl;
-	}
-
-	for(Variable* var : variables){
-		if(var->getNeighborhood().size() == 0 && var->getValue() == -1)
-			graph->assignVar(var, 1);
-	}
-
-	return true;
-}
 
 

@@ -31,10 +31,18 @@ class Variable
 		// la variable aparece negada
 		vector<Edge*> negativeNeighborhood;
 
-		// Productos para SP-UPDATE
+		// Subproductos para el cálculo de las surveys y
+		// y de los sesgos
 		double ps;
-		double pu;
-		double p0;
+		double ns;
+		int pzero;
+		int nzero;
+		
+
+		// Productos para SP-UPDATE
+		//double ps;
+		//double pu;
+		//double p0;
 
 		// Sesgos
 		double negativeBias;
