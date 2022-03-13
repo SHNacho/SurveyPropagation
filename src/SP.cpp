@@ -42,10 +42,6 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 				double prev_survey = e->getSurvey();
 				SP_UPDATE(e);
 				// Comprobamos si converge
-	//			if(t > 200){
-	//				cout << "Arista " << e->getFunction()->getId() << "-" << e->getVariable()->getId() << endl;
-	//				cout << "Diferencia: " << e->getSurvey() << " - " << prev_survey << " = " << abs(e->getSurvey() - prev_survey) << endl;
-	//			}
 				if(abs(e->getSurvey() - prev_survey) < precision){
 					e->setConverged(true);
 					counter++;
@@ -62,20 +58,13 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 			next = true;	
 	}
 	
-	if(t >= t_max){
-		converged = false;
-		for(Edge* e : edges){
-			if(abs(e->getSurvey() - e->oldSurvey) > precision){
-				cout << "Arista " << e->getFunction()->getId() << "-" << e->getVariable()->getId() << endl;
-				cout << "Diferencia: " << e->getSurvey() << " - " << e->oldSurvey << " = " << abs(e->getSurvey() - e->oldSurvey) << endl;
-			}
-		}
-	}
+	if(t >= t_max) converged = false;
+	
 
 	// Reestablecemos de nuevo la variable de convergencia de las aristas
-	for(Edge* e : edges){
+	for(Edge* e : edges)
 		e->setConverged(false);
-	}
+	
 
 	return converged;
 }
@@ -110,7 +99,6 @@ double SP_UPDATE(Edge* edge){
 
 	edge->setSurvey(survey);
 
-//	cout << "Survey calculada: " << survey << endl;
 	return survey;
 }
 

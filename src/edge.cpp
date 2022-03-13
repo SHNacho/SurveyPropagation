@@ -53,8 +53,7 @@ void Edge::calculateProducts(){
 	if(negated){
 		// Bucle sobre los vecinos en los que no aparece negada
 		for( Edge* neigh : pos_neigh )
-			if(neigh->getFunction() != this->function)
-				subproduct_u *= (1 - neigh->oldSurvey);
+			subproduct_u *= (1 - neigh->oldSurvey);
 		// Bucle sobre los vecinos en los que aparece negada
 		for( Edge* neigh : neg_neigh )
 			if(neigh->getFunction() != this->function)
@@ -68,8 +67,7 @@ void Edge::calculateProducts(){
 				subproduct_s *= (1 - neigh->oldSurvey);
 		// Bucle sobre los vecinos en los que aparece negada
 		for( Edge* neigh : neg_neigh )
-			if(neigh->getFunction() != this->function)
-				subproduct_u *= (1 - neigh->oldSurvey);
+			subproduct_u *= (1 - neigh->oldSurvey);
 	}
 
 	for( Edge* neigh : total_neigh ){
