@@ -143,7 +143,7 @@ void SolverSP::computeSubProducts(Graph* graph){
 }
 
 double SolverSP::SP_UPDATE(Function* clause){
-	double macConvDiffClause = 0.0;
+	double maxConvDiffClause = 0.0;
 	int zeros;
 	double allSubSurveys = 1.0;
   vector<double> subSurveys;
@@ -171,11 +171,11 @@ double SolverSP::SP_UPDATE(Function* clause){
       }
       // If edge is positive
       else {
-        p = var->pzero ? 0 : var->p;
-        if (var->mzero == 0)
-          m = var->m / (1.0 - edge->survey);
-        else if (var->mzero == 1 && (1.0 - edge->survey) < ZERO)
-          m = var->m;
+        p = var->pzero ? 0 : var->ps;
+        if (var->nzero == 0)
+          m = var->ns / (1.0 - edge->survey);
+        else if (var->nzero == 1 && (1.0 - edge->survey) < ZERO)
+          m = var->ns;
         else
           m = 0.0;
 
@@ -188,7 +188,7 @@ double SolverSP::SP_UPDATE(Function* clause){
       subSurveys.push_back(subSurvey);
 
       // If subsurvey is 0 keep track but don't multiply
-      if (subSurvey < ZERO_EPSILON) {
+      if (subSurvey < ZERO) {
         zeros++;
         if (zeros == 2) break;
       } else
@@ -200,8 +200,8 @@ double SolverSP::SP_UPDATE(Function* clause){
   // Calculate the survey for each edge with the previous data
   // =========================================================
   int i = 0;
-  for (Edge* edge : clause->allNeighbourEdges) {
-    if (edge->enabled && !edge->variable->assigned) {
+  for (Edge* edge : clause->neighborhood) {
+    if (edge->enabled && edge->variable->value == Unassigned) {
       // ---------------------------------------------
       // Calculate new survey from sub survey products
       // ---------------------------------------------
@@ -210,7 +210,7 @@ double SolverSP::SP_UPDATE(Function* clause){
       if (!zeros) newSurvey = allSubSurveys / subSurveys[i];
       // If this subsurvey is the only one that is 0
       // consider the new survey as the total subSurveys
-      else if (zeros == 1 && subSurveys[i] < ZERO_EPSILON)
+      else if (zeros == 1 && subSurveys[i] < ZERO)
         newSurvey = allSubSurveys;
       // If there where more that one subSurveys == 0, the new survey is 0
       else
@@ -221,16 +221,16 @@ double SolverSP::SP_UPDATE(Function* clause){
       // ----------------------------------------------------
       Variable* var = edge->variable;
       // If edge is negative update positive subproduct
-      if (!edge->type) {
+      if (edge->negated) {
         // If previous survey != 1 (with an epsilon margin)
-        if (1.0 - edge->survey > ZERO_EPSILON) {
+        if (1.0 - edge->survey > ZERO) {
           // If new survey != 1, update the sub product with the difference
-          if (1.0 - newSurvey > ZERO_EPSILON)
-            var->p *= ((1.0 - newSurvey) / (1.0 - edge->survey));
+          if (1.0 - newSurvey > ZERO)
+            var->ps *= ((1.0 - newSurvey) / (1.0 - edge->survey));
           // If new survey == 1, update the subproduct by remove the old survey
           // and keep track of the new survey == 1 (pzero++)
           else {
-            var->p /= (1.0 - edge->survey);
+            var->ps /= (1.0 - edge->survey);
             var->pzero++;
           }
         }
@@ -238,7 +238,7 @@ double SolverSP::SP_UPDATE(Function* clause){
         else {
           // If new survey == 1, don't do anything (both surveys are the same)
           // If new survey != 1, update subproduct
-          if (1.0 - newSurvey > ZERO_EPSILON) {
+          if (1.0 - newSurvey > ZERO) {
             var->p *= (1.0 - newSurvey);
             var->pzero--;
           }
@@ -247,24 +247,24 @@ double SolverSP::SP_UPDATE(Function* clause){
       // If edge is positive, update negative subproduct
       else {
         // If previous survey != 1 (with an epsilon margin)
-        if (1.0 - edge->survey > ZERO_EPSILON) {
+        if (1.0 - edge->survey > ZERO) {
           // If new survey != 1, update the sub product with the difference
-          if (1.0 - newSurvey > ZERO_EPSILON)
-            var->m *= ((1.0 - newSurvey) / (1.0 - edge->survey));
+          if (1.0 - newSurvey > ZERO)
+            var->ns *= ((1.0 - newSurvey) / (1.0 - edge->survey));
           // If new survey == 1, update the subproduct by remove the old survey
           // and keep track of the new survey == 1 (pzero++)
           else {
-            var->m /= (1.0 - edge->survey);
-            var->mzero++;
+            var->ns /= (1.0 - edge->survey);
+            var->nzero++;
           }
         }
         // If previous survey == 1
         else {
           // If new survey == 1, don't do anything (both surveys are the same)
           // If new survey != 1, update subproduct
-          if (1.0 - newSurvey > ZERO_EPSILON) {
-            var->m *= (1.0 - newSurvey);
-            var->mzero--;
+          if (1.0 - newSurvey > ZERO) {
+            var->ns *= (1.0 - newSurvey);
+            var->nzero--;
           }
         }
       }
@@ -273,45 +273,59 @@ double SolverSP::SP_UPDATE(Function* clause){
       // Store new survey and update max clause converge diff
       // ----------------------------------------------------
       double edgeConvDiff = std::abs(edge->survey - newSurvey);
-      if (maxConvDiffInClause < edgeConvDiff)
-        maxConvDiffInClause = std::abs(edgeConvDiff);
+      if (maxConvDiffClause < edgeConvDiff)
+        maxConvDiffClause = std::abs(edgeConvDiff);
 
       edge->survey = newSurvey;
       i++;
     }
   }
 
-  return maxConvDiffInClause;
+  return maxConvDiffClause;
+}
 
+bool SolverSP::assignVariable(Variable* var, lbool value){
+	if(var->value != Unassigned && var->value != value){
+		return false;
+	}
+	
+	var->setValue(value);
+	return clean(var);
+}
+
+bool SolverSP::clean(Variable* var){
+	for(Edge* edge : var->neighborhood){
+		if(edge->enabled){
+			if((edge->negated && var->value == False)
+				||
+			   (!edge->negated && var->value == True)){
+				edge->function->satisfy();
+			}
+			else{
+				edge->Dissable();
+				if(!unitPropagation(edge->function))
+					return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 
-result SolverSP::unitPropagation(Graph* graph){
-	vector<Function*> functions = graph->getFunctions();
-	// Para cada cláusula
-	for(Function* f : functions){
-		// Comprobamos si solo tiene una variable
-		// y si es así, asignamos el valor de dicha
-		// variable que satisfaga la cláusula
-		if(f->getEnabledEdges() == 1){
-			Edge* neigh = f->getNeighborhood()[0];
-			Variable* var = neigh->getVariable();
-			if(neigh->isNegated()){
-				// Si la variable ya está asignada y
-				// es distinta de la que se requiere,
-				// hemos llegado a una contradicción
-				if(var->getValue() != 0) return CONTRADICTION;
-				graph->assignVar(var, 0);
-			} else {
-				if(var->getValue() != 1) return CONTRADICTION;
-				graph->assignVar(var, 1);
-			}
+bool SolverSP::unitPropagation(Function* function){
+	bool ok = true;
+	vector<Edge*> edges = function->enabledNeighborhood();
 
-			graph->clean(var);
-		}
+	if(edges.size() == 1){
+		lbool value = True;
+		if (edges[0]->negated) value = False;
+		assignVariable(edges[0]->variable, value);
 	}
-	
-	return NO_CONTRADICTION;
+	else if(edges.size() == 0)
+		ok = false;
+
+	return ok;
 }
 
 
