@@ -12,12 +12,12 @@ using namespace std;
 
 
 //---------------------------------------------//
-bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
+bool SolverSP::surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	bool converged = true;
 
 	auto rng = std::default_random_engine {};
 
-	vector<Edge*> edges = graph->getEnabledEdges();
+	vector<Function*> clauses = graph->getEnabledFunctions();
 
 	int t = 0;
 	// Inicializamos las "survey" de manera aleatoria
@@ -34,8 +34,8 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 		// alcanzado la precisión deseada
 		int counter = 0;
 		// Recorremos las aristas de manera aleatoria
-		shuffle(std::begin(edges), std::end(edges), rng);
-		for(Edge* e : edges){
+		shuffle(std::begin(clauses), std::end(clauses), rng);
+		for(Function* e : clauses){
 			// Si la arista no ha convergido aún
 			if(!(e->hasConverged())){
 				// Actualizamos 'survey'
@@ -81,7 +81,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 }
 
 //---------------------------------------------//
-void updateOldSurvey(Graph* graph){
+void SolverSP::updateOldSurvey(Graph* graph){
 	vector<Edge*> edges = graph->getEnabledEdges();
 	for(Edge* e : edges){
 		e->oldSurvey = e->getSurvey();
@@ -90,41 +90,28 @@ void updateOldSurvey(Graph* graph){
 
 
 //---------------------------------------------//
-double SP_UPDATE(Edge* edge){
+double SolverSP::SP_UPDATE(Function* clause){
 	double survey = 1.0000;
-	vector<Edge*> neigh = edge->getFunction()->getEnabledNeighborhood();
 
-	if(neigh.size() != 0){
-		for(Edge* n : neigh){
-			Variable* var = n->getVariable();
-			if(var != edge->getVariable()){
-				n->calculateProducts();
-				if(var->getPu() <= 0.0000001) 
-					survey = 0;
-				else
-					survey *= (var->getPu() / (var->getPu() + var->getPs() + var->getP0()));
-				
-			}	
-		}
+	for(Edge* edge : clause->getEnabledNeighborhood()){
+		Variable* var = edge->getVariable();
 	}
-
-	edge->setSurvey(survey);
 
 //	cout << "Survey calculada: " << survey << endl;
 	return survey;
 }
 
-double SP_UPDATE2(Edge* edge){
-	double survey = 1.0000;
-	Function* clause = edge->getFunction();
-
-	for()
-
-	return survey;
-}
+//double SP_UPDATE2(Edge* edge){
+//	double survey = 1.0000;
+//	Function* clause = edge->getFunction();
+//
+//	for()
+//
+//	return survey;
+//}
 
 //---------------------------------------------//
-result unitPropagation(Graph* graph){
+result SolverSP::unitPropagation(Graph* graph){
 	vector<Function*> functions = graph->getEnabledFunctions();
 	// Para cada cláusula
 	for(Function* f : functions){
@@ -164,7 +151,7 @@ result unitPropagation(Graph* graph){
 }
 
 //---------------------------------------------//
-bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
+bool SolverSP::walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 	for (int i = 0; i < MAX_TRIES; ++i){
 		// TODO:Asigación aleatoria
 
@@ -184,7 +171,7 @@ bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 }
 
 //---------------------------------------------//
-bool SID(Graph* graph, int t_max, float precision, float f){
+bool SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 	int totalIt = 0;
 	vector<Edge*> edges = graph->getEnabledEdges();
 	vector<Variable*> variables = graph->getUnassignedVariables();
@@ -264,8 +251,23 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	return true;
 }
 
+void SolverSP::calculateProducts(Graph* fg){
+	for(Variable* var : fg->getUnassignedVariables()){
+		var->vn = 1.0;
+		var->vp = 1.0;
+
+		for(Edge* edge : var->getNeighborhood()){
+			if(edge->enabled){
+				if(edge->negated){
+					var->vn *= 1 - edge->survey;
+				}
+			}
+		}
+	}
+}
+
 //---------------------------------------------//
-void randomInit(Graph* graph){
+void SolverSP::randomInit(Graph* graph){
 	for(Edge* e : graph->getEnabledEdges()){
 		e->initRandomSurvey();
 	}

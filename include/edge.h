@@ -9,7 +9,7 @@ class Function;
 
 class Edge
 {
-	private:
+	public:
 		Variable* variable;
 		Function* function;
 

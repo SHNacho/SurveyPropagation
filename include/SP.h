@@ -13,12 +13,21 @@ enum result {
 	NO_CONTRADICTION
 };
 
-bool SID(Graph* graph, int t_max, float precision, float f);
-bool surveyPropagation(Graph grafo, int t_max, float precision, int & totalIt);
-double SP_UPDATE(Edge* edge);
-result unitPropagation(Graph* graph);
-void calculateProducts(Graph* graph);
-void updateOldSurvey(Graph* graph);
-void randomInit(Graph* graph);
+class SolverSP{
+
+public:
+
+	const double ZERO = 10e-6;
+
+	bool SID(Graph* graph, int t_max, float precision, float f);
+	bool surveyPropagation(Graph* grafo, int t_max, float precision, int & totalIt);
+	double SP_UPDATE(Function* clause);
+	result unitPropagation(Graph* graph);
+	void calculateProducts(Graph* graph);
+	void updateOldSurvey(Graph* graph);
+	void randomInit(Graph* graph);
+	bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS);
+
+};
 
 #endif //SP_H
