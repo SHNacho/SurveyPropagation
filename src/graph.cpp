@@ -23,7 +23,6 @@ Graph::Graph(string file){
 	ifs.open(file, ifstream::in);
 
 	if(ifs.is_open()){
-		cout << "Generando factor graph..." << endl;
 	}
 
 	string line;
@@ -57,28 +56,24 @@ Graph::Graph(string file){
 	// Pasamos a leer las clausulas
 	for(int i = 0; i < m; ++i){
 		int var;
-		for(int j = 0; j < k; ++j){
-
+		do{
 			bool neg = true;
 			
 			ifs >> var;
-			if(var > 0){
-				neg = false;
+			if(var > 0)	neg = false;
+			
+			if(var != 0){
+				int var_pos = abs(var) - 1;
+				addEdge(variables[var_pos], functions[i], neg);
 			}
-				
-			int var_pos = abs(var) - 1;
-
-			addEdge(variables[var_pos], functions[i], neg);
-		}	
-
-		ifs >> var;
+		} while(var != 0);
 	}
 
 	ifs.close();
 
-	cout << "Número de nodos variable: " << variables.size() << endl
-		 << "Número de nodos cláusula: " << functions.size()  << endl
-		 << "Número de aristas:        " << edges.size() << endl;
+	//cout << "Número de nodos variable: " << variables.size() << endl
+	//	 << "Número de nodos cláusula: " << functions.size()  << endl
+	//	 << "Número de aristas:        " << edges.size() << endl;
 }
 
 //----------------------------------------------//
@@ -93,7 +88,7 @@ void Graph::addEdge(Variable* var, Function* func, bool neg){
 vector<Variable*> Graph::unassignedVars(){
 	vector<Variable*> unassigned_vars;
 	for(Variable* v : variables)
-		if(v->value != Unassigned)
+		if(v->value == Unassigned)
 			unassigned_vars.push_back(v);
 	return unassigned_vars;
 }
@@ -123,7 +118,7 @@ void Graph::assignVar(Variable* var, int val){
 		var->setValue(val);
 
 	unassigned_vars--;
-	cout << "Variable " << var->getId() << " asignada" << endl;
+	//cout << "Variable " << var->Id << " asignada" << endl;
 }
 
 //----------------------------------------------//
@@ -141,53 +136,11 @@ void Graph::initFunctions(int n_functions){
 }
 
 //----------------------------------------------//
-void Graph::clean(Variable* fixed_var){
-	int val = fixed_var->getValue();
-	// Obtenemos el id de la variable fijada
-	int id = fixed_var->getId();	
-
-	vector<Edge*> neigh;
-	// Si el valor asignado a la variable es 0
-	// eliminamos todas las aristas que contengan
-	// las cláusulas que tengan esta variable negada
-	if ( val == 0){
-		neigh = fixed_var->getNegNeighborhood();
-	// Si el valor asignado a la variable es 1
-	// eliminamos todas las aristas que contengan
-	// las cláusulas que tengan esta variable NO negada
-	} else {
-		neigh = fixed_var->getPosNeighborhood();
-	}
-
-	for(int i = 0; i < neigh.size(); ++i){
-		Function* func = neigh[i]->getFunction();
-		int func_id = func->getId();
-
-		for(int j = 0; j < edges.size(); ++j){
-			int edge_func_id = edges[j]->getFunction()->getId();
-			if(edge_func_id == func_id){
-				func->removeNeighborhood();
-				edges.erase(edges.begin() + j);
-				j--;
-			}
-		}
-	}
-
-	// Eliminamos del grafo todas las aristas que
-	// incluyan la variable
-	for(int i = 0; i < edges.size(); ++i){
-		int var_id = edges[i]->getVariable()->getId();
-		if(var_id == id){
-			edges.erase(edges.begin() + i);
-			// Eliminamos el puntero que apunta a la variable
-			// en la cláusula, lo que elimina el puntero
-			// que apunta a la función en la variable.
-			edges[i]->getFunction()->removeNeighbor(id);
-		}
-	}
-	cout << "Número de aristas: " << edges.size() << endl;
+Graph::~Graph() {
+  for (Function* clause : functions) delete clause;
+  for (Variable* variable : variables) delete variable;
+  for (Edge* edge : edges) delete edge;
 }
-
 
 
 

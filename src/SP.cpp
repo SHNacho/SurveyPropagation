@@ -9,6 +9,8 @@
 
 using namespace std;
 
+SolverSP::SolverSP(){}
+
 
 result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 
@@ -21,16 +23,19 @@ result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 
 	while(true){
 		totalIt++;
+		cout << totalIt << endl;
 		// Llamamos a la rutina SP
 		result result_sp = surveyPropagation(graph, t_max, precision);
-		if(result_sp != SP_CONVERGED) return result_sp;
+		if(result_sp == SP_UNCONVERGED) return result_sp;
 
 		// Comprobamos si el problema es trivial
 		bool trivial = true;
 		for(int i = 0; i < edges.size() && trivial; ++i){
-			if (edges[i]->survey != 0.00)
+			//cout << edges[i]->survey << endl;
+			if (edges[i]->survey >= ZERO)
 				trivial = false;
 		}
+
 
 		// Si no es trivial
 		if(!trivial){
@@ -54,11 +59,10 @@ result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 
     		  	Variable* var = unassignedVars[i];
 
-    		  	// Recalculate biases for same reason, previous assignations clean the
-    		  	// graph and change relations
 				// Recalculamos los biases ya que la anterior asignación puede
 				// provocar que se modifiquen
     		  	computeBias(var);
+
 
 				// Calculamos el valor que se le va a asignar a la variable en función
 				// de sus sesgos
@@ -67,10 +71,15 @@ result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 				// Asignamos la variable
     		  	if (!assignVariable(var, val)) {
 					// Error si la variable ya ha sido asignada
+					// cout << "Contradicción aqui" << endl;
     		  	  	return CONTRADICTION;
     		  	}
     		}
-    	}
+    	} else {
+			//TODO hacer walksat
+			cout << "Walksat" << endl;
+			return WALKSAT;
+		}
 
 		//TODO Comprobar si se ha satisfecho la fórmula
 	}
@@ -78,32 +87,33 @@ result SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 
 result SolverSP::surveyPropagation(Graph* graph, int t_max, float precision){
 
+	randomInit(graph);
+
 	auto rng = std::default_random_engine {};
 
-	// Calculate subproducts of all variables
+	// Calculamos los subproductos necesarios
   	computeSubProducts(graph);
   	for (int i = 0; i < t_max; i++) {
-  	  	// Randomize clause iteration
+
   	  	vector<Function*> unsatisfiedClauses = graph->unsatisfiedFunctions();
   	  	shuffle(unsatisfiedClauses.begin(), unsatisfiedClauses.end(), rng);
 
-  	  	// Calculate surveys
+  	  	// Calculamos los surveys
   	  	double maxConvergeDiff = 0.0;
   	  	for (Function* clause : unsatisfiedClauses) {
   	  	  	double maxConvDiffInClause = SP_UPDATE(clause);
 
-  	  	  	// Save max convergence diff
+  	  	  	// Guardamos la mayor convergencia
   	  	  	if (maxConvDiffInClause > maxConvergeDiff)
   	  	  	  	maxConvergeDiff = maxConvDiffInClause;
   	  	}
 
-  	  	// Check if converged
+  	  	// Comprobar si converge
   	  	if (maxConvergeDiff <= precision) {
   	  	  	return SP_CONVERGED;
   	  	}
   	}
-  	// cout << ":-(" << endl;
-  	// Max itertions reach without convergence
+	cout << "No converge" << endl;
   	return SP_UNCONVERGED;
 }
 
@@ -144,21 +154,21 @@ void SolverSP::computeSubProducts(Graph* graph){
 
 double SolverSP::SP_UPDATE(Function* clause){
 	double maxConvDiffClause = 0.0;
-	int zeros;
+	int zeros = 0;
 	double allSubSurveys = 1.0;
-  vector<double> subSurveys;
+  	vector<double> subSurveys;
 
   // ==================================================================
   // Calculate subProducts of all literals and keep track of wich are 0
   // ==================================================================
   for (Edge* edge : clause->neighborhood) {
-    if (edge->enabled && edge->variable->value == Unassigned) {
-      Variable* var = edge->variable;
+    Variable* var = edge->variable;
+    if (edge->enabled && var->value == Unassigned) {
       double m, p, wn, wt;
 
-      // If edge is negative:
+      // Si la arista está negada:
       if (edge->negated) {
-        m = var->nzero ? 0 : var->ns;
+        m = var->nzero ? 0.0 : var->ns;
         if (var->pzero == 0)
           p = var->ps / (1.0 - edge->survey);
         else if (var->pzero == 1 && (1.0 - edge->survey) < ZERO)
@@ -169,9 +179,9 @@ double SolverSP::SP_UPDATE(Function* clause){
         wn = p * (1.0 - m);
         wt = m;
       }
-      // If edge is positive
+      // Si la arista no está negada
       else {
-        p = var->pzero ? 0 : var->ps;
+        p = var->pzero ? 0.0 : var->ps;
         if (var->nzero == 0)
           m = var->ns / (1.0 - edge->survey);
         else if (var->nzero == 1 && (1.0 - edge->survey) < ZERO)
@@ -216,6 +226,7 @@ double SolverSP::SP_UPDATE(Function* clause){
       else
         newSurvey = 0.0;
 
+
       // ----------------------------------------------------
       // Update the variable subproducts with new survey info
       // ----------------------------------------------------
@@ -239,7 +250,7 @@ double SolverSP::SP_UPDATE(Function* clause){
           // If new survey == 1, don't do anything (both surveys are the same)
           // If new survey != 1, update subproduct
           if (1.0 - newSurvey > ZERO) {
-            var->p *= (1.0 - newSurvey);
+            var->ps *= (1.0 - newSurvey);
             var->pzero--;
           }
         }
@@ -285,12 +296,16 @@ double SolverSP::SP_UPDATE(Function* clause){
 }
 
 bool SolverSP::assignVariable(Variable* var, lbool value){
-	if(var->value != Unassigned && var->value != value){
+	if(var->value == Unassigned){
+		// cout << "Unassigned" << endl;
+		var->setValue(value);
+		return clean(var);
+	} else if (var->value == value){
+		return clean(var);
+	} else{
+		// cout << "Asignación ya hecha" << endl;
 		return false;
 	}
-	
-	var->setValue(value);
-	return clean(var);
 }
 
 bool SolverSP::clean(Variable* var){
@@ -303,8 +318,10 @@ bool SolverSP::clean(Variable* var){
 			}
 			else{
 				edge->Dissable();
-				if(!unitPropagation(edge->function))
+				if(!unitPropagation(edge->function)){
+					// cout << "Error UP" << endl;
 					return false;
+				}
 			}
 		}
 	}
@@ -315,19 +332,51 @@ bool SolverSP::clean(Variable* var){
 
 bool SolverSP::unitPropagation(Function* function){
 	bool ok = true;
+
+	if(function->satisfied) return ok;
+	
 	vector<Edge*> edges = function->enabledNeighborhood();
 
-	if(edges.size() == 1){
+	int n_enabled = 0;
+
+	for(Edge* e : function->neighborhood){
+		if(e->enabled)
+			n_enabled++;
+	}
+
+	if(n_enabled == 1){
 		lbool value = True;
 		if (edges[0]->negated) value = False;
-		assignVariable(edges[0]->variable, value);
+		if (!assignVariable(edges[0]->variable, value))
+			ok = false;
 	}
-	else if(edges.size() == 0)
+	else if(n_enabled == 0)
 		ok = false;
 
 	return ok;
 }
 
+void SolverSP::computeBias(Variable* var){
+	double pp, pn, pnull;
+	pp = var->nzero ? 0 : var->ns;
+	pn = var->pzero ? 0 : var->ps;
+
+	var->nullBias = pp * pn;
+	var->negativeBias = pn - var->nullBias;
+	var->positiveBias = pp - var->nullBias;
+
+	double sum = var->nullBias + var->negativeBias + var->positiveBias;
+
+	var->positiveBias /= sum;
+	var->negativeBias /= sum;
+	var->nullBias = 1 - var->positiveBias - var->negativeBias;
+}
+
+void SolverSP::randomInit(Graph* graph){
+	for(Edge* e : graph->enabledEdges()){
+		e->initRandomSurvey();
+	}
+}
 
 
 

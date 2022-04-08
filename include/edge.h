@@ -20,7 +20,6 @@ class Edge
 
 		bool negated;
 		double survey;
-		bool converged;
 
 		bool enabled;
 
@@ -30,7 +29,6 @@ class Edge
 		Edge(Variable* variable, Function* function, bool negated);
 		void calculateProducts();
 		inline void Dissable(){enabled = false;}
-	private:
 		void initRandomSurvey();
 };
 

@@ -10,14 +10,18 @@ enum result {
 	SP_UNCONVERGED, 
 	SP_CONVERGED,
 	CONTRADICTION,
-	NO_CONTRADICTION
+	NO_CONTRADICTION,
+	SAT,
+	WALKSAT
 };
 
 class SolverSP{
 
 	public:
 		int totalIt;
-		double ZERO = 0.000001;
+		const double ZERO = 0.0000000001;
+
+		SolverSP();
 
 		result SID(Graph* graph, int t_max, float precision, float f);
 		result surveyPropagation(Graph* grafo, int t_max, float precision);	
@@ -33,6 +37,7 @@ class SolverSP{
 		 * Pi(1 - eta->j), j in V-(i)
 		 **/
 		void computeSubProducts(Graph* graph);
+		void randomInit(Graph* graph);
 
 };
 #endif //SP_H

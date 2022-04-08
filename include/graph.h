@@ -31,6 +31,7 @@ class Graph
 		// Declaración de funciones //
 		//==========================//
 		Graph(string file);
+		~Graph();
 		/**
 		 * Devuelve el número de variables no asignadas
 		 **/

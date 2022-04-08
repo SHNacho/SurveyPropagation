@@ -8,12 +8,12 @@ Edge::Edge(Variable* variable, Function* function, bool negated){
 	this->function = function;
 	this->negated = negated;
 	this->survey = Randfloat(0.0000, 1.0000);
-	this->converged = false;
+	this->enabled = true;
 }
 
 //--------------------------------//
 void Edge::initRandomSurvey(){
-	survey = Randfloat(0.0, 1.0);
+	this->survey = Randfloat(0.000, 1.000);
 }
 
 //void Edge::calculateProducts(){

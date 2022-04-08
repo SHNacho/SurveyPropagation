@@ -2,6 +2,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -17,6 +19,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -32,6 +36,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -47,6 +53,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -62,6 +70,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -77,6 +87,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -92,6 +104,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-O2",
+      "-fopenmp",
       "-std=c++1z",
       "-g",
       "-I./include",
