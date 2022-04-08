@@ -9,7 +9,7 @@ class Edge;
 
 class Variable 
 {
-	public:
+	private:
 		// id de la variable
 		int id; 
 		// Valor que toma la variable
@@ -31,8 +31,9 @@ class Variable
 		double p0;
 
 		// Subproductos
-		double vp;
-		double vn;
+		double sub_s;
+		double sub_u;
+		double sub_0;
 
 
 		// Sesgos
