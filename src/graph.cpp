@@ -9,6 +9,7 @@
 #include "variable.h"
 #include "function.h"
 #include "edge.h"
+#include "SP.h"
 
 
 using namespace std;
@@ -139,11 +140,13 @@ void Graph::addVariable(Variable variable){
 void Graph::assignVar(Variable* var, bool val){
 	var->setValue(val);
 	unassigned_vars--;
+	clean(var);
 }
 
 void Graph::assignVar(Variable* var){
 	var->fix();
 	unassigned_vars--;
+	clean(var);
 }
 
 //----------------------------------------------//
@@ -165,10 +168,17 @@ void Graph::clean(Variable* fixed_var){
 	bool val = fixed_var->getValue();
 	for(Edge* e : fixed_var->getNeighborhood()){
 		if(e->isEnabled()){
+			Function* clause = e->getFunction();
+			// Si satisface la cláusula, se deshabilita
 			if(val != e->isNegated())
-				e->getFunction()->dissable();
-			else 
+				clause->dissable();
+			// Si no la satisface
+			else{
+				// La deshabilita
 				e->dissable();
+				// Se llama a UP sobre esa cláusula
+				unitPropagation(clause);
+			}
 		}
 	}
 }

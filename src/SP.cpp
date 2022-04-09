@@ -159,6 +159,17 @@ result unitPropagation(Graph* graph){
 }
 
 //---------------------------------------------//
+// TODO: Completar este UP para que se llame cuando se asigne
+// una variable
+result unitPropagation(Function* clause){
+	vector<Edge*> enabled_vars = clause->getEnabledNeighborhood();
+
+	if(enabled_vars.size() == 1 && !(clause->isEnabled)){
+
+	}
+}
+
+//---------------------------------------------//
 bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 	for (int i = 0; i < MAX_TRIES; ++i){
 		// TODO:Asigación aleatoria
