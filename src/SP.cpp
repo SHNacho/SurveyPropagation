@@ -114,15 +114,6 @@ double SP_UPDATE(Edge* edge){
 	return survey;
 }
 
-double SP_UPDATE2(Edge* edge){
-	double survey = 1.0000;
-	Function* clause = edge->getFunction();
-
-	for()
-
-	return survey;
-}
-
 //---------------------------------------------//
 result unitPropagation(Graph* graph){
 	vector<Function*> functions = graph->getEnabledFunctions();
@@ -134,6 +125,7 @@ result unitPropagation(Graph* graph){
 			// han asignado todas sus variables y todavía no está
 			// satisfecha, por lo que no podemos seguir
 			if(neigh.size() == 0){
+				cout << "CONTRADICTION" << endl;
 				return CONTRADICTION;
 			}
 			// Comprobamos si solo tiene una variable
@@ -145,14 +137,17 @@ result unitPropagation(Graph* graph){
 					// Si la variable ya está asignada y
 					// es distinta de la que se requiere,
 					// hemos llegado a una contradicción
-					if( var->isAssigned() && (var->getValue() != false) ) 
+					if( var->isAssigned() && (var->getValue() != false) ){
+						cout << "CONTRADICTION" << endl;
 						return CONTRADICTION;
-	
+					}
+						
 					graph->assignVar(var, false);
 				} else {
-					if( var->isAssigned() && (var->getValue() != true) ) 
+					if( var->isAssigned() && (var->getValue() != true) ){
+						cout << "CONTRADICTION" << endl;
 						return CONTRADICTION;
-	
+					}
 					graph->assignVar(var, true);
 				}
 				graph->clean(var);
@@ -200,6 +195,8 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	while(graph->unassignedVars() > 0 &&
 		  result_unit_prop == NO_CONTRADICTION)
 	{
+		count ++;
+		cout << "Iteración SID: " << count << endl;
 		if(!surveyPropagation(graph, t_max, precision, totalIt)){
 			//cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
 			cout << "UNCONVERGED" << endl;
