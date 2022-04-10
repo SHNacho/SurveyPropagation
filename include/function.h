@@ -17,16 +17,14 @@ class Function
 		int id;
 		int enabled_edges;
 		bool satisfied;
-		bool enabled;
 		vector<Edge*> neighborhood;
 
 	public:
 		Function(int id);
 		int getId(){return id;}
 		int getEnabledEdges(){return enabled_edges;}
-		bool isEnabled(){return enabled;}
 		bool isSatisfied(){return satisfied;}
-		void satisfy(){satisfied = true;}
+		void satisfy();
 		vector<Edge*>& getNeighborhood(){return neighborhood;}
 		vector<Edge*> getEnabledNeighborhood();
 		void addNeighbor(Edge* neigh);
@@ -36,7 +34,6 @@ class Function
 		// (k -> número de variables por clausula)
 		void removeNeighbor(int var_id);
 		void removeNeighborhood();
-		void dissable();
 		~Function();
 };
 

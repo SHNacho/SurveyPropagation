@@ -17,7 +17,7 @@ enum result {
 bool SID(Graph* graph, int t_max, float precision, float f);
 bool surveyPropagation(Graph grafo, int t_max, float precision, int & totalIt);
 double SP_UPDATE(Edge* edge);
-result unitPropagation(Graph* graph);
+result unitPropagation(Graph* graph, Function* clause);
 void calculateProducts(Graph* graph);
 void updateOldSurvey(Graph* graph);
 void randomInit(Graph* graph);

@@ -94,7 +94,7 @@ vector<Edge*> Graph::getEnabledEdges(){
 vector<Function*> Graph::getEnabledFunctions(){
 	vector<Function*> v_functions;
 	for(Function* f : functions){
-		if(f->isEnabled()){
+		if(!f->isSatisfied()){
 			v_functions.push_back(f);	
 		}
 	}
@@ -171,13 +171,13 @@ void Graph::clean(Variable* fixed_var){
 			Function* clause = e->getFunction();
 			// Si satisface la cláusula, se deshabilita
 			if(val != e->isNegated())
-				clause->dissable();
+				clause->satisfy();
 			// Si no la satisface
 			else{
 				// La deshabilita
 				e->dissable();
 				// Se llama a UP sobre esa cláusula
-				unitPropagation(clause);
+				unitPropagation(this, clause);
 			}
 		}
 	}
@@ -198,7 +198,7 @@ Graph Graph::simplifiedFormula(){
 	}
 	outfile << "c\tvalue n = " << variables.size() << endl;
 	for(Function* f : functions){
-		if(f->isEnabled()){
+		if(!f->isSatisfied()){
 			m++;
 		}
 	}
@@ -206,7 +206,7 @@ Graph Graph::simplifiedFormula(){
 	outfile << "c" << endl;
 	outfile << "p" << endl;
 	for(Function* f : functions){
-		if(f->isEnabled()){
+		if(!f->isSatisfied()){
 			vector <Edge*> neigh = f->getEnabledNeighborhood();
 			for(Edge* e : neigh){
 				if(e->isEnabled()){

@@ -6,7 +6,6 @@ Function::Function(int id){
 	this->id = id;
 	this->enabled_edges = 0;
 	this->satisfied = false;
-	this->enabled = true;
 }
 
 //---------------------------------------//
@@ -36,12 +35,12 @@ vector<Edge*> Function::getEnabledNeighborhood(){
 }
 
 //---------------------------------------//
-void Function::dissable(){
+void Function::satisfy(){
 	for(Edge* e : neighborhood){
 		if(e->isEnabled())
 			e->dissable();
 	}
-	enabled = false;
+	satisfied = true;
 }
 
 //---------------------------------------//

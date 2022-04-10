@@ -103,58 +103,71 @@ double SP_UPDATE(Edge* edge){
 }
 
 //---------------------------------------------//
-result unitPropagation(Graph* graph){
-	vector<Function*> functions = graph->getEnabledFunctions();
-	// Para cada cláusula
-	for(Function* f : functions){
-		if(f->isEnabled()){
-			vector<Edge*> neigh = f->getEnabledNeighborhood();
-			// Si la cláusula no tiene vecinos significa que se
-			// han asignado todas sus variables y todavía no está
-			// satisfecha, por lo que no podemos seguir
-			if(neigh.size() == 0){
-				cout << "CONTRADICTION" << endl;
-				return CONTRADICTION;
-			}
-			// Comprobamos si solo tiene una variable
-			// y si es así, asignamos el valor de dicha
-			// variable que satisfaga la cláusula
-			if(neigh.size() == 1 && !(f->isSatisfied())){
-				Variable* var = neigh[0]->getVariable();
-				if(neigh[0]->isNegated()){
-					// Si la variable ya está asignada y
-					// es distinta de la que se requiere,
-					// hemos llegado a una contradicción
-					if( var->isAssigned() && (var->getValue() != false) ){
-						cout << "CONTRADICTION" << endl;
-						return CONTRADICTION;
-					}
+// result unitPropagation(Graph* graph){
+// 	vector<Function*> functions = graph->getEnabledFunctions();
+// 	// Para cada cláusula
+// 	for(Function* f : functions){
+// 		if(!f->isSatisfied()){
+// 			vector<Edge*> neigh = f->getEnabledNeighborhood();
+// 			// Si la cláusula no tiene vecinos significa que se
+// 			// han asignado todas sus variables y todavía no está
+// 			// satisfecha, por lo que no podemos seguir
+// 			if(neigh.size() == 0){
+// 				cout << "CONTRADICTION" << endl;
+// 				return CONTRADICTION;
+// 			}
+// 			// Comprobamos si solo tiene una variable
+// 			// y si es así, asignamos el valor de dicha
+// 			// variable que satisfaga la cláusula
+// 			if(neigh.size() == 1 && !(f->isSatisfied())){
+// 				Variable* var = neigh[0]->getVariable();
+// 				if(neigh[0]->isNegated()){
+// 					// Si la variable ya está asignada y
+// 					// es distinta de la que se requiere,
+// 					// hemos llegado a una contradicción
+// 					if( var->isAssigned() && (var->getValue() != false) ){
+// 						cout << "CONTRADICTION" << endl;
+// 						return CONTRADICTION;
+// 					}
 						
-					graph->assignVar(var, false);
-				} else {
-					if( var->isAssigned() && (var->getValue() != true) ){
-						cout << "CONTRADICTION" << endl;
-						return CONTRADICTION;
-					}
-					graph->assignVar(var, true);
-				}
-				graph->clean(var);
-			}
-		}
-	}
+// 					graph->assignVar(var, false);
+// 				} else {
+// 					if( var->isAssigned() && (var->getValue() != true) ){
+// 						cout << "CONTRADICTION" << endl;
+// 						return CONTRADICTION;
+// 					}
+// 					graph->assignVar(var, true);
+// 				}
+// 				graph->clean(var);
+// 			}
+// 		}
+// 	}
 	
-	return NO_CONTRADICTION;
-}
+// 	return NO_CONTRADICTION;
+// }
 
 //---------------------------------------------//
 // TODO: Completar este UP para que se llame cuando se asigne
 // una variable
-result unitPropagation(Function* clause){
+result unitPropagation(Graph* fg, Function* clause){
 	vector<Edge*> enabled_vars = clause->getEnabledNeighborhood();
 
-	if(enabled_vars.size() == 1 && !(clause->isEnabled)){
+	if(enabled_vars.size() == 1 && !clause->isSatisfied()){
+		bool val = enabled_vars[0]->isNegated() ? false : true;
+		fg->assignVar(enabled_vars[0]->getVariable(), val);
+		return(NO_CONTRADICTION);
+	} 
+	else if(enabled_vars.size() == 0){
+		cout << "Cláusula no satisfecha" << endl;
+		return CONTRADICTION;
+	} 
 
-	}
+	return (NO_CONTRADICTION);
+}
+
+//---------------------------------------------//
+bool assignVar(Graph* fg, Variable* var, bool val){
+	fg->assignVar(var, val);
 }
 
 //---------------------------------------------//
@@ -166,7 +179,7 @@ bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
 			if(graph->unassignedVars() == 0) return true;
 			vector<Variable*> variables = graph->getUnassignedVariables();
 			//TODO: Buscar la variable que produzca la mejor variación
-			for(int k = 0; k < variables.size(); ++i){
+			for(unsigned k = 0; k < variables.size(); ++i){
 			}
 
 			// TODO: Flip la variable que produzca la mejor variación
@@ -188,11 +201,11 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	//	e->setSurvey(Randfloat(0.0, 1.0));
 	//}
 
-	result result_unit_prop = unitPropagation(graph);
+	//result result_unit_prop = unitPropagation(graph);
+
 
 	int count = 0;
-	while(graph->unassignedVars() > 0 &&
-		  result_unit_prop == NO_CONTRADICTION)
+	while(graph->unassignedVars() > 0)
 	{
 		count ++;
 		cout << "Iteración SID: " << count << endl;
@@ -224,8 +237,11 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 			int n_vars_fix = (1 < aux) ? aux : 1;
 			
 			for(int i = 0; i < n_vars_fix; ++i){
-				graph->assignVar(variables[i]);
-				graph->clean(variables[i]);
+				Variable* var = variables[i];
+				if(!var->isAssigned()){
+					bool val = var->getPosBias() > var->getNegBias() ? true : false;
+					assignVar(graph, var, val);
+				}
 			}
 		}
 		else{
@@ -235,19 +251,11 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 			return true;
 		}
 
-		result_unit_prop = unitPropagation(graph);
-		if(result_unit_prop == CONTRADICTION){
-			//cout << "Se han encontrado contradicciones durante Unit Propagation" << endl;
-			cout << "CONTRADICTION" << endl;
-			return false;
-		}
-
 		// Posiblemente hayan quedado variables que no son necesarias, por lo que
 		// les asignamos cualquier valor
 		for(Variable* var : variables){
 			if(var->enabledNeighborhood().size() == 0 && !(var->isAssigned())){
-				graph->clean(var);
-				graph->assignVar(var, 1);
+				assignVar(graph, var, 1);
 			}
 		}
 
