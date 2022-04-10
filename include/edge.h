@@ -20,6 +20,7 @@ class Edge
 
 	public:
 		double oldSurvey;
+		bool nullMessage;
 
 		Edge(Variable* variable, Function* function, bool negated);
 		void setSurvey(double survey);

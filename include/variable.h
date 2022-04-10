@@ -30,10 +30,7 @@ class Variable
 		double pu;
 		double p0;
 
-		// Subproductos
-		double sub_s;
-		double sub_u;
-		double sub_0;
+		
 
 
 		// Sesgos
@@ -44,6 +41,11 @@ class Variable
 		// Productos para el cálculo de los sesgos 
 
 	public:
+		// Subproductos
+		double positive_prod;
+		double negative_prod;
+		double total_prod;
+		
 		Variable(int id);
 
 		void addNeighbor (Edge* neigh);

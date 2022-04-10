@@ -122,6 +122,7 @@ void Graph::addEdge(Variable* var, Function* func, bool neg){
 	func->addNeighbor(e);
 }
 
+//----------------------------------------------//
 void Graph::addEdge(Edge edge){
 	edges.push_back(&edge);
 }
@@ -137,16 +138,11 @@ void Graph::addVariable(Variable variable){
 }
 
 //----------------------------------------------//
-void Graph::assignVar(Variable* var, bool val){
+bool Graph::assignVar(Variable* var, bool val){
+	bool ok = true;
 	var->setValue(val);
 	unassigned_vars--;
-	clean(var);
-}
-
-void Graph::assignVar(Variable* var){
-	var->fix();
-	unassigned_vars--;
-	clean(var);
+	return clean(var);
 }
 
 //----------------------------------------------//
@@ -164,7 +160,7 @@ void Graph::initFunctions(int n_functions){
 }
 
 //----------------------------------------------//
-void Graph::clean(Variable* fixed_var){
+bool Graph::clean(Variable* fixed_var){
 	bool val = fixed_var->getValue();
 	for(Edge* e : fixed_var->getNeighborhood()){
 		if(e->isEnabled()){
@@ -177,10 +173,12 @@ void Graph::clean(Variable* fixed_var){
 				// La deshabilita
 				e->dissable();
 				// Se llama a UP sobre esa cláusula
-				unitPropagation(this, clause);
+				if (unitPropagation(this, clause) == CONTRADICTION)
+					return false;
 			}
 		}
 	}
+	return true;
 }
 
 
@@ -236,6 +234,7 @@ int Graph::Break(Variable* var){
 bool compareId(Variable* v1, Variable* v2){
 	return (v1->getId() < v2->getId());
 }
+
 bool Graph::validate(vector<Variable*> asignacion){
 	sort(asignacion.begin(), asignacion.end(), compareId);
 	bool valida = true;

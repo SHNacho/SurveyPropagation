@@ -60,14 +60,8 @@ class Graph
 		 * y elimina solo el vecino que apunta a la variable de las
 		 * cláusulas no satisfechas
 		 **/
-		void clean(Variable* fixed_var);
-		void assignVar(Variable* assigned, bool val);
-		/**
-		 * Dada una variable le asigna un valor, el cual
-		 * dependerá de los sesgos calculados para dicha
-		 * variable
-		 **/
-		void assignVar(Variable* assigned);
+		bool clean(Variable* fixed_var);
+		bool assignVar(Variable* assigned, bool val);
 		Graph simplifiedFormula();
 		/**
 		 * Calcula el número de cláusulas que pasan de estar

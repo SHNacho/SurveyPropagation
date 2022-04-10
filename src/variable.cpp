@@ -1,6 +1,7 @@
 #include "variable.h"
 #include "function.h"
 #include "edge.h"
+#include "cmath"
 
 
 Variable::Variable(int id){
@@ -49,7 +50,6 @@ void Variable::setValue(bool val){
 		for(Edge* e : negativeNeighborhood){
 			Function* f = e->getFunction();
 			f->satisfy();
-			//f->dissable();
 		}
 	} else if (value) {
 		for(Edge* e : positiveNeighborhood){
@@ -163,8 +163,8 @@ bool compareVars(Variable* v1, Variable* v2){
 	double v2_pbias = v2->getPosBias();
 	double v2_nbias = v2->getNegBias();
 
-	double v1_diff = abs(v1_pbias - v1_nbias);
-	double v2_diff = abs(v2_pbias - v2_nbias);
+	double v1_diff = fabs(v1_pbias - v1_nbias);
+	double v2_diff = fabs(v2_pbias - v2_nbias);
 
 	// Si v1 ya está asignada la mandamos al final
 	if(v1->isAssigned()) return false;

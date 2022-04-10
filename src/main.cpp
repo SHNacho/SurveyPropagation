@@ -58,6 +58,8 @@ int main(int argc, char *argv[]){
 				// 	//cout << "Iteraciones: " << solver.totalSIDIterations 
 				//     //     << endl;
 				// }
+
+				fg->validate(fg->getVariables());
 			}
 
 			delete fg;

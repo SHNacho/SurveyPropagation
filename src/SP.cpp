@@ -21,7 +21,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 
 	int t = 0;
 	// Inicializamos las "survey" de manera aleatoria
-	randomInit(graph);
+	//randomInit(graph);
 
 	bool next = false;
 	
@@ -102,59 +102,14 @@ double SP_UPDATE(Edge* edge){
 	return survey;
 }
 
-//---------------------------------------------//
-// result unitPropagation(Graph* graph){
-// 	vector<Function*> functions = graph->getEnabledFunctions();
-// 	// Para cada cláusula
-// 	for(Function* f : functions){
-// 		if(!f->isSatisfied()){
-// 			vector<Edge*> neigh = f->getEnabledNeighborhood();
-// 			// Si la cláusula no tiene vecinos significa que se
-// 			// han asignado todas sus variables y todavía no está
-// 			// satisfecha, por lo que no podemos seguir
-// 			if(neigh.size() == 0){
-// 				cout << "CONTRADICTION" << endl;
-// 				return CONTRADICTION;
-// 			}
-// 			// Comprobamos si solo tiene una variable
-// 			// y si es así, asignamos el valor de dicha
-// 			// variable que satisfaga la cláusula
-// 			if(neigh.size() == 1 && !(f->isSatisfied())){
-// 				Variable* var = neigh[0]->getVariable();
-// 				if(neigh[0]->isNegated()){
-// 					// Si la variable ya está asignada y
-// 					// es distinta de la que se requiere,
-// 					// hemos llegado a una contradicción
-// 					if( var->isAssigned() && (var->getValue() != false) ){
-// 						cout << "CONTRADICTION" << endl;
-// 						return CONTRADICTION;
-// 					}
-						
-// 					graph->assignVar(var, false);
-// 				} else {
-// 					if( var->isAssigned() && (var->getValue() != true) ){
-// 						cout << "CONTRADICTION" << endl;
-// 						return CONTRADICTION;
-// 					}
-// 					graph->assignVar(var, true);
-// 				}
-// 				graph->clean(var);
-// 			}
-// 		}
-// 	}
-	
-// 	return NO_CONTRADICTION;
-// }
 
 //---------------------------------------------//
-// TODO: Completar este UP para que se llame cuando se asigne
-// una variable
 result unitPropagation(Graph* fg, Function* clause){
 	vector<Edge*> enabled_vars = clause->getEnabledNeighborhood();
 
 	if(enabled_vars.size() == 1 && !clause->isSatisfied()){
 		bool val = enabled_vars[0]->isNegated() ? false : true;
-		fg->assignVar(enabled_vars[0]->getVariable(), val);
+		assignVar(fg, enabled_vars[0]->getVariable(), val);
 		return(NO_CONTRADICTION);
 	} 
 	else if(enabled_vars.size() == 0){
@@ -167,7 +122,11 @@ result unitPropagation(Graph* fg, Function* clause){
 
 //---------------------------------------------//
 bool assignVar(Graph* fg, Variable* var, bool val){
-	fg->assignVar(var, val);
+	if(var->isAssigned()){
+		cout << "Variable ya asignada" << endl;
+		return false;
+	}
+	return fg->assignVar(var, val);
 }
 
 //---------------------------------------------//
@@ -202,6 +161,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	//}
 
 	//result result_unit_prop = unitPropagation(graph);
+	randomInit(graph);
 
 
 	int count = 0;
@@ -218,7 +178,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 		// Comprobamos si el problema es trivial
 		bool trivial = true;
 		for(int i = 0; i < edges.size() && trivial; ++i){
-			if (edges[i]->getSurvey() != 0.00)
+			if (edges[i]->getSurvey() > 0.000001)
 				trivial = false;
 		}
 
@@ -266,6 +226,40 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	cout << "SAT, " << totalIt << endl;
 	
 	return true;
+}
+
+//----------------------------------------------//
+void computeSubProducts(Graph* fg){
+	for(Variable* var : fg->getVariables()){
+		if(!var->isAssigned()){
+			// Se inicializan los productos a 1.0
+			var->positive_prod = 1.0;
+			var->negative_prod = 1.0;
+			var->total_prod = 1.0;
+
+			for(Edge* edge : var->getNeighborhood()){
+				if(edge->isEnabled()){
+					// Calculamos la differencia
+					double diff = 1 - edge->getSurvey();
+					// Si no vale 0
+					if(diff > ZERO){
+						if(edge->isNegated())
+							// Actualiza producto negativo (V_+)
+							var->negative_prod *= diff;
+						else
+							// Actualiza producto positivo (V_-)
+							var->positive_prod *= diff;
+
+						var->total_prod *= diff;
+					}
+					// Si vale 0, marcamos que el mensaje de esa arista
+					// va a dar 0
+					else
+						edge->nullMessage = true;
+				}
+			}
+		}
+	}
 }
 
 //---------------------------------------------//
