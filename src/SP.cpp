@@ -88,7 +88,7 @@ double SP_UPDATE(Edge* edge){
 			Variable* var = n->getVariable();
 			if(var != edge->getVariable()){
 				n->calculateProducts();
-				if(var->getPu() <= 0.000001) 
+				if(var->getPu() <= 0.0000001) 
 					survey = 0;
 				else
 					survey *= (var->getPu() / (var->getPu() + var->getPs() + var->getP0()));
@@ -113,6 +113,7 @@ result unitPropagation(Graph* graph){
 			// han asignado todas sus variables y todavía no está
 			// satisfecha, por lo que no podemos seguir
 			if(neigh.size() == 0){
+				cout << "CONTRADICTION" << endl;
 				return CONTRADICTION;
 			}
 			// Comprobamos si solo tiene una variable
@@ -124,14 +125,17 @@ result unitPropagation(Graph* graph){
 					// Si la variable ya está asignada y
 					// es distinta de la que se requiere,
 					// hemos llegado a una contradicción
-					if( var->isAssigned() && (var->getValue() != false) ) 
+					if( var->isAssigned() && (var->getValue() != false) ){
+						cout << "CONTRADICTION" << endl;
 						return CONTRADICTION;
-	
+					}
+						
 					graph->assignVar(var, false);
 				} else {
-					if( var->isAssigned() && (var->getValue() != true) ) 
+					if( var->isAssigned() && (var->getValue() != true) ){
+						cout << "CONTRADICTION" << endl;
 						return CONTRADICTION;
-	
+					}
 					graph->assignVar(var, true);
 				}
 				graph->clean(var);
@@ -140,6 +144,17 @@ result unitPropagation(Graph* graph){
 	}
 	
 	return NO_CONTRADICTION;
+}
+
+//---------------------------------------------//
+// TODO: Completar este UP para que se llame cuando se asigne
+// una variable
+result unitPropagation(Function* clause){
+	vector<Edge*> enabled_vars = clause->getEnabledNeighborhood();
+
+	if(enabled_vars.size() == 1 && !(clause->isEnabled)){
+
+	}
 }
 
 //---------------------------------------------//
@@ -179,6 +194,8 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	while(graph->unassignedVars() > 0 &&
 		  result_unit_prop == NO_CONTRADICTION)
 	{
+		count ++;
+		cout << "Iteración SID: " << count << endl;
 		if(!surveyPropagation(graph, t_max, precision, totalIt)){
 			//cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
 			cout << "UNCONVERGED" << endl;

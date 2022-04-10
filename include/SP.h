@@ -10,7 +10,8 @@ enum result {
 	SP_UNCONVERGED, 
 	SP_CONVERGED,
 	CONTRADICTION,
-	NO_CONTRADICTION
+	NO_CONTRADICTION,
+	SAT
 };
 
 bool SID(Graph* graph, int t_max, float precision, float f);
