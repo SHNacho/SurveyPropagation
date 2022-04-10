@@ -113,7 +113,7 @@ result unitPropagation(Graph* fg, Function* clause){
 		return(NO_CONTRADICTION);
 	} 
 	else if(enabled_vars.size() == 0){
-		cout << "Cláusula no satisfecha" << endl;
+		//cout << "Cláusula no satisfecha" << endl;
 		return CONTRADICTION;
 	} 
 
@@ -123,7 +123,7 @@ result unitPropagation(Graph* fg, Function* clause){
 //---------------------------------------------//
 bool assignVar(Graph* fg, Variable* var, bool val){
 	if(var->isAssigned()){
-		cout << "Variable ya asignada" << endl;
+		//cout << "Variable ya asignada" << endl;
 		return false;
 	}
 	return fg->assignVar(var, val);
@@ -168,7 +168,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 	while(graph->unassignedVars() > 0)
 	{
 		count ++;
-		cout << "Iteración SID: " << count << endl;
+		//cout << "Iteración SID: " << count << endl;
 		if(!surveyPropagation(graph, t_max, precision, totalIt)){
 			//cout << "Solución no encontrada: Survey Propagation no ha convergido" << endl;
 			cout << "UNCONVERGED" << endl;
@@ -223,7 +223,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 		//cout << "Variables restantes: " << graph->unassignedVars() << endl;
 	}
 
-	cout << "SAT, " << totalIt << endl;
+	//cout << "SAT, " << totalIt << endl;
 	
 	return true;
 }
