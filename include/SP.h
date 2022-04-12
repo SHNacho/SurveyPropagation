@@ -30,5 +30,6 @@ void randomInit(Graph* graph);
  * @param fg Factor graph
  */
 void computeSubProducts(Graph* fg);
+void computeProducts(Edge* edge, double & a, double & b, double & c);
 
 #endif //SP_H

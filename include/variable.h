@@ -45,6 +45,9 @@ class Variable
 		double positive_prod;
 		double negative_prod;
 		double total_prod;
+
+		int positive_nulls;
+		int negative_nulls;
 		
 		Variable(int id);
 

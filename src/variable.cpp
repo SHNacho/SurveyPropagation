@@ -112,38 +112,15 @@ void Variable::removeNeighbor(int func_id){
 
 //---------------------------------------//
 double Variable::calculateBias(){
+	positiveBias = (1.0 - positive_prod) * negative_prod;
+	negativeBias = (1.0 - negative_prod) * positive_prod;
+	nullBias = positive_prod * negative_prod;
 
-	double positive_subprod = 1.0,
-		   negative_subprod = 1.0,
-		   subprod 			= 1.0;
+	double sum = positiveBias + negativeBias + nullBias;
 
-	double positive_aux = 0.0,
-		   negative_aux = 0.0,
-		   null_aux     = 0.0;
-
-	for(Edge* neigh : this->enabledPositiveNeighborhood()){
-		positive_subprod *= (1 - neigh->getSurvey());
-	}
-
-	for(Edge* neigh : this->enabledNegativeNeighborhood()){
-		negative_subprod *= (1 - neigh->getSurvey());
-	}
-
-	for(Edge* neigh : this->enabledNeighborhood()){
-		subprod *= (1 - neigh->getSurvey());
-	}
-
-	positive_aux = (1 - positive_subprod) * negative_subprod;
-	negative_aux = (1 - negative_subprod) * positive_subprod;
-	null_aux     = subprod;
-
-	positiveBias = positive_aux / (positive_aux + negative_aux + null_aux);
-	negativeBias = negative_aux / (positive_aux + negative_aux + null_aux);
-	nullBias     = 1 - positiveBias - negativeBias;
-
-	if(positiveBias > 1.0 || negativeBias > 1.0 || nullBias > 1.0){
-		cout << "Error!!!" << endl;
-	}
+	positiveBias = positiveBias / sum;
+	negativeBias = negativeBias / sum;
+	nullBias = 1 - positiveBias - negativeBias;
 
 	return (positiveBias - negativeBias);
 }

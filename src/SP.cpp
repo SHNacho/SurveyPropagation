@@ -25,9 +25,9 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 
 	bool next = false;
 	
-	//calculateProducts(graph);
 
 	for(t = 1; t <= t_max && !next; ++t){
+		computeSubProducts(graph);
 		updateOldSurvey(graph);
 		totalIt++;
 		// Contador para contar el número de aristas que han
@@ -80,19 +80,19 @@ void updateOldSurvey(Graph* graph){
 
 //---------------------------------------------//
 double SP_UPDATE(Edge* edge){
-	double survey = 1.0000;
+	double survey = 1.0;
+	double product_u, product_s, product_null;
 	vector<Edge*> neigh = edge->getFunction()->getEnabledNeighborhood();
 
 	if(neigh.size() != 0){
 		for(Edge* n : neigh){
-			Variable* var = n->getVariable();
-			if(var != edge->getVariable()){
-				n->calculateProducts();
-				if(var->getPu() <= 0.0000001) 
-					survey = 0;
+			Variable* j = n->getVariable();
+			if(j != edge->getVariable()){
+				computeProducts(n, product_u, product_s, product_null);
+				if(product_u <= ZERO) 
+					survey = 0.0;
 				else
-					survey *= (var->getPu() / (var->getPu() + var->getPs() + var->getP0()));
-				
+					survey *= (product_u / (product_s + product_u + product_null));
 			}	
 		}
 	}
@@ -102,20 +102,65 @@ double SP_UPDATE(Edge* edge){
 	return survey;
 }
 
+//---------------------------------------------//
+void computeProducts(Edge* edge, double & product_u, double & product_s, double & product_null){
+
+	//------- Cálculo de los productos ------//
+	Variable* var = edge->getVariable();
+	if(edge->isEnabled() && !var->isAssigned()){
+		double pu, ps, pt;
+		// Si la variable está negada
+		if(edge->isNegated()){
+			if(var->positive_nulls > 0)
+				pu = 0.0;
+			else
+				pu = var->positive_prod;
+
+			if(var->negative_nulls > 0){
+				if(var->negative_nulls == 1 && edge->nullMessage)
+					ps = var->negative_prod; 
+				else
+					ps = 0.0;
+			} else
+				ps = var->negative_prod / (1 - edge->getSurvey());
+		}
+		// Si la variable no está negada
+		else{
+			if(var->negative_nulls > 0)
+				pu = 0.0;
+			else
+				pu = var->negative_prod;
+
+			if(var->positive_nulls > 0){
+				if(var->positive_nulls == 1 && edge->nullMessage)
+					ps = var->positive_prod; 
+				else
+					ps = 0.0;
+			} else
+				ps = var->positive_prod / (1 - edge->getSurvey());
+		}
+		product_u = (1.0 - pu) * ps;
+		product_s = (1.0 - ps) * pu;
+		product_null = pu*ps;
+	}
+	
+}
 
 //---------------------------------------------//
 result unitPropagation(Graph* fg, Function* clause){
 	vector<Edge*> enabled_vars = clause->getEnabledNeighborhood();
 
-	if(enabled_vars.size() == 1 && !clause->isSatisfied()){
-		bool val = enabled_vars[0]->isNegated() ? false : true;
-		assignVar(fg, enabled_vars[0]->getVariable(), val);
-		return(NO_CONTRADICTION);
-	} 
-	else if(enabled_vars.size() == 0){
-		//cout << "Cláusula no satisfecha" << endl;
-		return CONTRADICTION;
-	} 
+	if(!clause->isSatisfied()){
+		if(enabled_vars.size() == 1 && !clause->isSatisfied()){
+			bool val = enabled_vars[0]->isNegated() ? false : true;
+			assignVar(fg, enabled_vars[0]->getVariable(), val);
+			return(NO_CONTRADICTION);
+		} 
+		else if(enabled_vars.size() == 0){
+			cout << "Cláusula no satisfecha" << endl;
+			return CONTRADICTION;
+		} 
+	}
 
 	return (NO_CONTRADICTION);
 }
@@ -178,12 +223,13 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 		// Comprobamos si el problema es trivial
 		bool trivial = true;
 		for(int i = 0; i < edges.size() && trivial; ++i){
-			if (edges[i]->getSurvey() > 0.000001)
+			if (edges[i]->getSurvey() > ZERO)
 				trivial = false;
 		}
 
 		// Si no es trivial
 		if(trivial == false){
+			computeSubProducts(graph);
 			for(int i = 0; i < variables.size(); ++i){
 				if(!(variables[i]->isAssigned())){
 					variables[i]->calculateBias();
@@ -236,6 +282,8 @@ void computeSubProducts(Graph* fg){
 			var->positive_prod = 1.0;
 			var->negative_prod = 1.0;
 			var->total_prod = 1.0;
+			var->positive_nulls = 0;
+			var->negative_nulls = 0;
 
 			for(Edge* edge : var->getNeighborhood()){
 				if(edge->isEnabled()){
@@ -243,6 +291,7 @@ void computeSubProducts(Graph* fg){
 					double diff = 1 - edge->getSurvey();
 					// Si no vale 0
 					if(diff > ZERO){
+						edge->nullMessage=false;
 						if(edge->isNegated())
 							// Actualiza producto negativo (V_+)
 							var->negative_prod *= diff;
@@ -254,8 +303,13 @@ void computeSubProducts(Graph* fg){
 					}
 					// Si vale 0, marcamos que el mensaje de esa arista
 					// va a dar 0
-					else
+					else{
 						edge->nullMessage = true;
+						if(edge->isNegated()) 
+							var->negative_nulls++;
+						else 
+							var->positive_nulls++;
+					}
 				}
 			}
 		}
