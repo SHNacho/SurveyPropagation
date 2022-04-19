@@ -307,6 +307,10 @@ bool SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 			}
 		}
 
+
+	//	Graph* simplified_fg = graph->simplifiedFormula();
+	//	return SID(simplified_fg , t_max, precision, f);
+
 		//cout << "Aristas restantes: " << graph->getEnabledEdges().size() << endl;
 		//cout << "Variables restantes: " << graph->unassignedVars() << endl;
 	}
