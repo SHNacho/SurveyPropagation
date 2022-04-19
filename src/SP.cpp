@@ -12,7 +12,7 @@ using namespace std;
 
 
 //---------------------------------------------//
-bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
+bool SolverSP::surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 	bool converged = true;
 
 	auto rng = std::default_random_engine {};
@@ -21,7 +21,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 
 	int t = 0;
 	// Inicializamos las "survey" de manera aleatoria
-	//randomInit(graph);
+	// randomInit(graph);
 
 	bool next = false;
 	
@@ -70,7 +70,7 @@ bool surveyPropagation(Graph* graph, int t_max, float precision, int & totalIt){
 }
 
 //---------------------------------------------//
-void updateOldSurvey(Graph* graph){
+void SolverSP::updateOldSurvey(Graph* graph){
 	vector<Edge*> edges = graph->getEnabledEdges();
 	for(Edge* e : edges){
 		e->oldSurvey = e->getSurvey();
@@ -79,7 +79,7 @@ void updateOldSurvey(Graph* graph){
 
 
 //---------------------------------------------//
-double SP_UPDATE(Edge* edge){
+double SolverSP::SP_UPDATE(Edge* edge){
 	double survey = 1.0;
 	double product_u, product_s, product_null;
 	vector<Edge*> neigh = edge->getFunction()->getEnabledNeighborhood();
@@ -103,7 +103,7 @@ double SP_UPDATE(Edge* edge){
 }
 
 //---------------------------------------------//
-void computeProducts(Edge* edge, double & product_u, double & product_s, double & product_null){
+void SolverSP::computeProducts(Edge* edge, double & product_u, double & product_s, double & product_null){
 
 	//------- Cálculo de los productos ------//
 	Variable* var = edge->getVariable();
@@ -147,13 +147,14 @@ void computeProducts(Edge* edge, double & product_u, double & product_s, double 
 }
 
 //---------------------------------------------//
-result unitPropagation(Graph* fg, Function* clause){
+result SolverSP::unitPropagation(Graph* fg, Function* clause){
 	vector<Edge*> enabled_vars = clause->getEnabledNeighborhood();
 
 	if(!clause->isSatisfied()){
 		if(enabled_vars.size() == 1 && !clause->isSatisfied()){
 			bool val = enabled_vars[0]->isNegated() ? false : true;
-			assignVar(fg, enabled_vars[0]->getVariable(), val);
+			if(!assignVar(fg, enabled_vars[0]->getVariable(), val))
+				return CONTRADICTION;
 			return(NO_CONTRADICTION);
 		} 
 		else if(enabled_vars.size() == 0){
@@ -166,36 +167,64 @@ result unitPropagation(Graph* fg, Function* clause){
 }
 
 //---------------------------------------------//
-bool assignVar(Graph* fg, Variable* var, bool val){
+bool SolverSP::assignVar(Graph* fg, Variable* var, bool val){
 	if(var->isAssigned()){
 		//cout << "Variable ya asignada" << endl;
 		return false;
 	}
-	return fg->assignVar(var, val);
+	fg->assignVar(var, val);
+	return clean(fg, var);
 }
 
 //---------------------------------------------//
-bool walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
-	for (int i = 0; i < MAX_TRIES; ++i){
-		// TODO:Asigación aleatoria
-
-		for(int j = 0; j < MAX_FLIPS; ++j){
-			if(graph->unassignedVars() == 0) return true;
-			vector<Variable*> variables = graph->getUnassignedVariables();
-			//TODO: Buscar la variable que produzca la mejor variación
-			for(unsigned k = 0; k < variables.size(); ++i){
+bool SolverSP::clean(Graph* fg, Variable* var){
+	bool val = var->getValue();
+	for(Edge* e : var->getNeighborhood()){
+		if(e->isEnabled()){
+			Function* clause = e->getFunction();
+			// Si satisface la cláusula, se deshabilita
+			if(val != e->isNegated())
+				clause->satisfy();
+			// Si no la satisface
+			else{
+				// La deshabilita
+				e->dissable();
+				// Se llama a UP sobre esa cláusula
+				if (unitPropagation(fg, clause) == CONTRADICTION)
+					return false;
 			}
-
-			// TODO: Flip la variable que produzca la mejor variación
 		}
 	}
-
-	// TODO: cambiar
 	return true;
 }
 
 //---------------------------------------------//
-bool SID(Graph* graph, int t_max, float precision, float f){
+bool SolverSP::walksat(Graph* graph, int MAX_TRIES, int MAX_FLIPS){
+	for (int i = 0; i < MAX_TRIES; ++i){
+		for(Variable* var : graph->getVariables())
+			var->setValue(Randint(0, 1));
+
+		for(int j = 0; j < MAX_FLIPS; ++j){
+			if(graph->validate(graph->getVariables())){
+				cout << "Resuelto por walksat" << endl;
+				return true;
+			}
+			vector<Function*> unsat_clauses;
+			for(Function* clause : graph->getFunctions()){
+				if(!clause->isSatisfied())
+					unsat_clauses.push_back(clause);
+			}
+
+			Function* rand_clause = unsat_clauses[Randint(0, unsat_clauses.size()-1)];
+			Variable* var = pickVar(rand_clause);
+			var->flip();
+		}
+	}
+	return false;
+}
+
+//---------------------------------------------//
+bool SolverSP::SID(Graph* graph, int t_max, float precision, float f){
 	int totalIt = 0;
 	vector<Edge*> edges = graph->getEnabledEdges();
 	vector<Variable*> variables = graph->getUnassignedVariables();
@@ -207,7 +236,6 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 
 	//result result_unit_prop = unitPropagation(graph);
 	randomInit(graph);
-
 
 	int count = 0;
 	while(graph->unassignedVars() > 0)
@@ -228,12 +256,22 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 		}
 
 		// Si no es trivial
+		double sum_biases = 0.0;
+		double max_bias = 0.0;
 		if(trivial == false){
 			computeSubProducts(graph);
 			for(int i = 0; i < variables.size(); ++i){
 				if(!(variables[i]->isAssigned())){
 					variables[i]->calculateBias();
+					max_bias = variables[i]->getPosBias() > variables[i]->getNegBias() ? variables[i]->getPosBias() : variables[i]->getNegBias();
+					sum_biases += max_bias;
 				}
+			}
+			if(sum_biases/graph->unassignedVars() < 0.001){
+				cout << sum_biases << endl;
+				cout << "WALKSAT" << endl;
+				Graph* simplified_fg = graph->simplifiedFormula();
+				return walksat(simplified_fg, 10, 100);
 			}
 
 			sort(variables.begin(), variables.end(), compareVars);
@@ -241,12 +279,16 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 			int unassigned_vars = graph->unassignedVars();
 			int aux = unassigned_vars * f;
 			int n_vars_fix = (1 < aux) ? aux : 1;
-			
+
 			for(int i = 0; i < n_vars_fix; ++i){
 				Variable* var = variables[i];
 				if(!var->isAssigned()){
+					var->calculateBias();
 					bool val = var->getPosBias() > var->getNegBias() ? true : false;
-					assignVar(graph, var, val);
+					if(!assignVar(graph, var, val)){
+						cout << "Variable " << var << " ya asignada" << endl;
+						return false;
+					}
 				}
 			}
 		}
@@ -275,7 +317,7 @@ bool SID(Graph* graph, int t_max, float precision, float f){
 }
 
 //----------------------------------------------//
-void computeSubProducts(Graph* fg){
+void SolverSP::computeSubProducts(Graph* fg){
 	for(Variable* var : fg->getVariables()){
 		if(!var->isAssigned()){
 			// Se inicializan los productos a 1.0
@@ -317,9 +359,67 @@ void computeSubProducts(Graph* fg){
 }
 
 //---------------------------------------------//
-void randomInit(Graph* graph){
+void SolverSP::randomInit(Graph* graph){
 	for(Edge* e : graph->getEnabledEdges()){
 		e->initRandomSurvey();
 	}
+}
+
+//---------------------------------------------//
+Variable* SolverSP::pickVar(Function* clause){
+	vector<Edge*> edges = clause->getNeighborhood();
+
+	auto rng = std::default_random_engine {};
+	shuffle(std::begin(edges), std::end(edges), rng);
+
+	// Si hay alguna variable 0-break, la devolvemos
+	for(Edge* edge : edges){
+		Variable* var = edge->getVariable();
+		var->initUnvisited();
+		bool zero = true;
+		vector<Edge*> tlc = var->TLC();
+
+		for(int i = 0; i < tlc.size() && zero; ++i){
+			Function* clause = tlc[i]->getFunction();
+			clause->visited = true;
+			if(clause->countTrueLiterals() == 1)
+				zero = false;
+		}
+
+		if(zero = true)
+			return var;
+	}
+
+	float rand = Randfloat(0.0, 1.0);
+
+	// Si no existen 0-break variables
+	// O se elige una aleatoria
+	if(rand >= 0.567){
+		int rand_var = Randint(0, edges.size());
+		return(edges[rand_var]->getVariable());
+	}
+	// O se elige la que menor break-count tenga
+	Variable* bestVar = edges[0]->getVariable();
+	for(Edge* edge : edges){
+		Variable* var = edge->getVariable();
+		var->wbreak = 1;
+		bool larger = false;
+		vector<Edge*> tlc = var->TLC();
+		for(int i = 0; i < tlc.size() && !larger; ++i){
+			Edge* var_neigh = tlc[i];
+			Function* clause = var_neigh->getFunction();
+			if(!clause->visited){
+				if(clause->countTrueLiterals() == 1){
+					var->wbreak += 1;
+					if(var->wbreak >= bestVar->wbreak)
+						larger = true;
+				}
+			}
+		}
+		// Si el break es menor, esa es la mejor variable
+		if(!larger) bestVar = var;
+	}
+
+	return bestVar;
 }
 

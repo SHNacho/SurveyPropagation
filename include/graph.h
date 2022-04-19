@@ -27,6 +27,7 @@ class Graph
 
 	public:
 		Graph(string file);
+		Graph(vector<Edge*> edges, vector<Variable*> variables, vector<Function*> clauses);
 		vector<Edge*>& getEdges(){return edges;}
 		vector<Variable*>& getVariables(){return variables;}
 		vector<Function*>& getFunctions(){return functions;}
@@ -51,18 +52,10 @@ class Graph
 		 **/
 		void addVariable(Variable variable);
 
-		/**
-		 * Dada una variable, la cual ha sido fijada a un valor
-		 * concreto, elimina del grafo todas las aristas que
-		 * contengan dicha variable así como las aristas que 
-		 * contengan clausulas que contengan la variable.
-		 * Además elimina los vecinos de las cláusulas satisfechas
-		 * y elimina solo el vecino que apunta a la variable de las
-		 * cláusulas no satisfechas
-		 **/
+		
 		bool clean(Variable* fixed_var);
-		bool assignVar(Variable* assigned, bool val);
-		Graph simplifiedFormula();
+		void assignVar(Variable* assigned, bool val);
+		Graph* simplifiedFormula();
 		/**
 		 * Calcula el número de cláusulas que pasan de estar
 		 * satisfechas a insatisfechas al realizar un 'flip'

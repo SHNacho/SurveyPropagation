@@ -4,6 +4,7 @@
 #include <numeric>
 #include <cstdlib>
 #include <algorithm>
+#include <set>
 
 #include "graph.h"
 #include "variable.h"
@@ -15,15 +16,17 @@
 using namespace std;
 
 Graph::Graph(string file){
+	string nombre = file;
 	ifstream ifs;
 	// n -> nº de variables
 	// m -> nº de cláusulas
 	// k -> nº variables por cláusula
 	int n, m, k;
 
-	ifs.open(file, ifstream::in);
+	ifs.open(nombre, ifstream::in);
 
-	if(ifs.is_open()){
+	if(!ifs.is_open()){
+		cout << "Archivo no encontrado" << endl;
 	}
 
 	string line;
@@ -35,10 +38,8 @@ Graph::Graph(string file){
 	// Obtenemos el número de cláusulas
 	getline(ifs, line);
 	m = stoi(line); // Pasa char a int
-	getline(ifs, line, '=');
 	// Obtenemos el número de variables por cláusula
 	getline(ifs, line);
-	k = stoi(line); // Pasa char a int
 	getline(ifs, line);
 	getline(ifs, line);
 
@@ -46,8 +47,8 @@ Graph::Graph(string file){
 	// reservamos espacio para las variables, clausulas y aristas
 	this->variables.reserve(n);
 	this->functions.reserve(m);
-	this->edges.reserve(m * k);
-	this->enabled_edges = m*k;
+	this->edges = vector<Edge*>();
+	this->enabled_edges = 0;
 
 	// inicializamos las variables y cláusulas
 	// rellenando el vector de variables de 1 a n
@@ -67,6 +68,7 @@ Graph::Graph(string file){
 			if(var != 0){
 				int var_pos = abs(var) - 1;
 				addEdge(variables[var_pos], functions[i], neg);
+				this->enabled_edges++;
 			}
 		} while(var != 0);
 	}
@@ -76,6 +78,18 @@ Graph::Graph(string file){
 	//cout << "Número de nodos variable: " << variables.size() << endl
 	//	 << "Número de nodos cláusula: " << functions.size()  << endl
 	//	 << "Número de aristas:        " << edges.size() << endl;
+}
+
+Graph::Graph(vector<Edge*> edges, vector<Variable*> variables, vector<Function*> clauses){
+	this->functions = clauses;
+	this->variables = variables;
+
+	for(Edge* edge : edges){
+		addEdge(edge->getVariable(), edge->getFunction(), edge->isNegated());
+	}
+
+	this->enabled_edges = edges.size();
+	this->unassigned_vars = variables.size();
 }
 
 //----------------------------------------------//
@@ -138,11 +152,10 @@ void Graph::addVariable(Variable variable){
 }
 
 //----------------------------------------------//
-bool Graph::assignVar(Variable* var, bool val){
+void Graph::assignVar(Variable* var, bool val){
 	bool ok = true;
 	var->setValue(val);
 	unassigned_vars--;
-	return clean(var);
 }
 
 //----------------------------------------------//
@@ -160,72 +173,6 @@ void Graph::initFunctions(int n_functions){
 }
 
 //----------------------------------------------//
-bool Graph::clean(Variable* fixed_var){
-	bool val = fixed_var->getValue();
-	for(Edge* e : fixed_var->getNeighborhood()){
-		if(e->isEnabled()){
-			Function* clause = e->getFunction();
-			// Si satisface la cláusula, se deshabilita
-			if(val != e->isNegated())
-				clause->satisfy();
-			// Si no la satisface
-			else{
-				// La deshabilita
-				e->dissable();
-				// Se llama a UP sobre esa cláusula
-				if (unitPropagation(this, clause) == CONTRADICTION)
-					return false;
-			}
-		}
-	}
-	return true;
-}
-
-
-//----------------------------------------------//
-Graph Graph::simplifiedFormula(){
-	ofstream outfile("data/simplified.txt");
-	int n = 0,
-		m = 0;
-
-	outfile << "c" << endl;
-	for(Variable* v : variables){
-		if(!(v->isAssigned())){
-			++n;
-		}
-	}
-	outfile << "c\tvalue n = " << variables.size() << endl;
-	for(Function* f : functions){
-		if(!f->isSatisfied()){
-			m++;
-		}
-	}
-	outfile << "c\tvalue m = " << m << endl;
-	outfile << "c" << endl;
-	outfile << "p" << endl;
-	for(Function* f : functions){
-		if(!f->isSatisfied()){
-			vector <Edge*> neigh = f->getEnabledNeighborhood();
-			for(Edge* e : neigh){
-				if(e->isEnabled()){
-					if(e->isNegated())
-						outfile << "-" << e->getVariable()->getId() << " ";
-					else
-						outfile << e->getVariable()->getId() << " ";
-				}
-			}
-			outfile << "0" << endl;
-		}
-	}
-
-	outfile.close();
-
-	Graph g("data/simplified.txt");
-
-	return g;
-}
-
-//----------------------------------------------//
 int Graph::Break(Variable* var){
 	
 }
@@ -233,6 +180,44 @@ int Graph::Break(Variable* var){
 //----------------------------------------------//
 bool compareId(Variable* v1, Variable* v2){
 	return (v1->getId() < v2->getId());
+}
+
+Graph* Graph::simplifiedFormula(){
+	auto cmp = [](Variable* a, Variable* b) { return (a->getId() < b->getId());};
+	auto cmp_c = [](Function* a, Function* b) { return (a->getId() < b->getId());};
+	vector<Edge*> simp_edges = vector<Edge*>();
+	set<Variable*, decltype(cmp)> simp_vars(cmp);
+	set<Function*, decltype(cmp_c)> simp_clauses(cmp_c);
+
+	for(Edge* edge : edges){
+		if(edge->isEnabled()){
+			Function* new_clause = nullptr;
+			Variable* new_var = nullptr;
+			Variable* var = edge->getVariable();
+			Function* clause = edge->getFunction();
+			set<Function*>::iterator index_clause = simp_clauses.find(clause);
+			set<Variable*>::iterator index_var = simp_vars.find(var);
+			if(index_clause == simp_clauses.end()){
+				Function* new_clause = new Function(clause->getId());
+				index_clause = simp_clauses.insert(new_clause).first;
+			}
+			if(index_var == simp_vars.end()){
+				Variable* new_var = new Variable(var->getId());
+				index_var = simp_vars.insert(new_var).first;
+			}
+			Edge* new_edge = new Edge(*index_var, *index_clause, edge->isNegated());
+			simp_edges.push_back(new_edge);
+		}
+	}
+
+	vector<Variable*> v_variables(simp_vars.size());
+	vector<Function*> v_clauses(simp_clauses.size());
+	copy(simp_clauses.begin(), simp_clauses.end(), v_clauses.begin());
+	copy(simp_vars.begin(), simp_vars.end(), v_variables.begin());
+
+
+	Graph* fg = new Graph(simp_edges, v_variables, v_clauses);
+	return fg;
 }
 
 bool Graph::validate(vector<Variable*> asignacion){
@@ -245,15 +230,15 @@ bool Graph::validate(vector<Variable*> asignacion){
 		for(Edge* e : f->getNeighborhood()){
 			Variable* var = e->getVariable();
 			int id = var->getId();
-			bool var_value = asignacion[id-1]->getValue();
-			if(e->isNegated() != var_value && asignacion[id-1]->isAssigned()) satisfied = true;
+			bool var_value =var->getValue();
+			if(e->isNegated() != var_value && var->isAssigned()) satisfied = true;
 		}
 		if(satisfied){
 			counter++;
 		}
 	}
 
-	cout << "Cláusulas satisfechas: " << counter << endl;
+	cout << "Cláusulas satisfechas: " << counter << " de " << functions.size() << endl;
 	if(counter == functions.size())
 		return true;
 	else

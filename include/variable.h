@@ -49,6 +49,9 @@ class Variable
 		int positive_nulls;
 		int negative_nulls;
 		
+		// Variables para walksat
+		int wbreak;
+		
 		Variable(int id);
 
 		void addNeighbor (Edge* neigh);
@@ -56,6 +59,25 @@ class Variable
 		void fix();
 		void removeNeighbor(int func_id);
 		void computeSubproducts();
+
+		// Métodos para walksat
+		/**
+		 * @brief Devuelve todos las cláusulas que quedan satisfechas
+		 * por la actual asignación de la variable
+		 * 
+		 * @return vector<Edge*> Conjunto de cláusulas satisfechas.
+		 */
+		vector<Edge*> TLC();
+		/**
+		 * @brief Inicializa todas las cláusulas de TLC como no visitadas
+		 * 
+		 */
+		void initUnvisited();
+		/**
+		 * @brief Modifica el valor de la variable de verdadero a falso o viceversa
+		 * 
+		 */
+		void flip();
 
 		/////////////////////////
 		// Setters and getters //
@@ -86,6 +108,10 @@ class Variable
 		void setPu(double pu){this->pu = pu;}
 		void setP0(double p0){this->p0 = p0;}
 		bool isAssigned(){return assigned;}
+		bool operator<(const Variable& t) const
+    	{
+        	return (this->id < t.id);
+    	}
 };
 
 bool compareVars(Variable* v1, Variable* v2);

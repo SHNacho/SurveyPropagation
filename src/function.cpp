@@ -6,6 +6,7 @@ Function::Function(int id){
 	this->id = id;
 	this->enabled_edges = 0;
 	this->satisfied = false;
+	this->visited = false;
 }
 
 //---------------------------------------//
@@ -43,6 +44,17 @@ void Function::satisfy(){
 	satisfied = true;
 }
 
+void Function::update(){
+	for(Edge* edge : neighborhood){
+		if(edge->isNegated() != edge->getVariable()->getValue()){
+			satisfied = true;
+		} 
+		else{
+			satisfied = false;
+		}
+	}
+}
+
 //---------------------------------------//
 void Function::removeNeighbor(int var_id){
 	bool found = false;
@@ -69,4 +81,15 @@ void Function::removeNeighborhood(){
 	}
 
 	neighborhood.clear();
+}
+
+//---------------------------------------//
+int Function::countTrueLiterals(){
+	int counter = 0;
+	for(Edge* edge : neighborhood){
+		Variable* var = edge->getVariable();
+		if(edge->isNegated() != var->getValue())
+			counter++;
+	}
+	return counter;
 }

@@ -36,14 +36,15 @@ int main(int argc, char *argv[]){
 			#pragma omp parallel for private(filename, fg)
 			for(int k = 1; k <= N_FILES; ++k){
 				filename = dirname + "/cnf_" + to_string(k) + ".txt";
+				//filename = "./cnf_3_8.txt";
 				// Inicializamos el solver
 				cout << filename << endl;
-				// SolverSP solver;		
+				SolverSP solver;		
 				// Generamos el factor graph a partir del archivo
 				fg = new Graph(filename); 
 				//cout << "Solving " << filename << endl;
 				// Ejecutamos SP
-				bool r = SID(fg, 1000, 0.001, fraction[j]);
+				bool r = solver.SID(fg, 1000, 0.001, fraction[j]);
 				if( r ){
 					#pragma omp atomic
 					resueltos++;
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]){
 				//     //     << endl;
 				// }
 
-				fg->validate(fg->getVariables());
+				//fg->validate(fg->getVariables());
 			}
 
 			delete fg;

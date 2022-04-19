@@ -151,8 +151,29 @@ bool compareVars(Variable* v1, Variable* v2){
 	return (v1_diff > v2_diff);
 }
 
+// Métodos para walksat
+//---------------------------------------//
+vector<Edge*> Variable::TLC(){
+	return value ? positiveNeighborhood : negativeNeighborhood;
+}
 
+void Variable::initUnvisited(){
+	for(Edge* edge : TLC()){
+		Function* clause = edge->getFunction();
+		clause->visited = false;
+	}
+}
 
+void Variable::flip(){
+	value = !value;
+	for(Edge* edge : neighborhood){
+		Function* clause = edge->getFunction();
+		if(!clause->isSatisfied())
+			clause->satisfy();
+		else
+			clause->update();
+	}
+}
 
 
 

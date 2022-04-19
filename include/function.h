@@ -20,11 +20,16 @@ class Function
 		vector<Edge*> neighborhood;
 
 	public:
+
+		// Variables para walksat
+		bool visited;
+
 		Function(int id);
 		int getId(){return id;}
 		int getEnabledEdges(){return enabled_edges;}
 		bool isSatisfied(){return satisfied;}
 		void satisfy();
+		void update();
 		vector<Edge*>& getNeighborhood(){return neighborhood;}
 		vector<Edge*> getEnabledNeighborhood();
 		void addNeighbor(Edge* neigh);
@@ -34,6 +39,10 @@ class Function
 		// (k -> número de variables por clausula)
 		void removeNeighbor(int var_id);
 		void removeNeighborhood();
+
+		// Métodos para walksat
+		int countTrueLiterals();
+
 		~Function();
 };
 
