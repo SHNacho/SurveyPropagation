@@ -1,11 +1,11 @@
 #include "edge.h"
 #include "variable.h"
-#include "function.h"
+#include "clause.h"
 #include "random.h"
 
-Edge::Edge(Variable* variable, Function* function, bool negated){
+Edge::Edge(Variable* variable, Clause* clause, bool negated){
 	this->variable = variable;
-	this->function = function;
+	this->clause = clause;
 	this->negated = negated;
 	this->survey = Randfloat(0.0000, 1.0000);
 	this->enabled = true;
