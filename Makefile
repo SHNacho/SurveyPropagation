@@ -9,7 +9,7 @@ build: $(BIN)/main_exe
 
 all: clean build
 
-$(BIN)/main_exe: $(OBJ)/main.o $(OBJ)/variable.o $(OBJ)/function.o $(OBJ)/edge.o $(OBJ)/graph.o $(OBJ)/SP.o $(OBJ)/random.o
+$(BIN)/main_exe: $(OBJ)/main.o $(OBJ)/variable.o $(OBJ)/clause.o $(OBJ)/edge.o $(OBJ)/graph.o $(OBJ)/SP.o $(OBJ)/random.o
 	g++ $(OPT) -g -I$(INC) $^ -o $@ 
 
 $(OBJ)/main.o: $(SRC)/main.cpp $(INC)/SP.h 
@@ -18,16 +18,16 @@ $(OBJ)/main.o: $(SRC)/main.cpp $(INC)/SP.h
 $(OBJ)/SP.o: $(SRC)/SP.cpp $(INC)/graph.h 
 	g++ $(OPT) -g -I$(INC) -c $< -o $@ 
 
-$(OBJ)/graph.o: $(SRC)/graph.cpp $(INC)/variable.h $(INC)/function.h $(INC)/edge.h
+$(OBJ)/graph.o: $(SRC)/graph.cpp $(INC)/variable.h $(INC)/clause.h $(INC)/edge.h
 	g++ $(OPT)  -g -I$(INC) -c $< -o $@ 
 
-$(OBJ)/edge.o: $(SRC)/edge.cpp $(INC)/variable.h $(INC)/function.h
+$(OBJ)/edge.o: $(SRC)/edge.cpp $(INC)/variable.h $(INC)/clause.h
 	g++ $(OPT) -g -I$(INC) -c $< -o $@ 
 
-$(OBJ)/function.o: $(SRC)/function.cpp $(INC)/variable.h
+$(OBJ)/clause.o: $(SRC)/clause.cpp $(INC)/variable.h
 	g++ $(OPT) -g -I$(INC) -c $< -o $@ 
 
-$(OBJ)/variable.o: $(SRC)/variable.cpp $(INC)/function.h $(INC)/edge.h
+$(OBJ)/variable.o: $(SRC)/variable.cpp $(INC)/clause.h $(INC)/edge.h
 	g++ $(OPT) -g  -I$(INC) -c $< -o $@ 
 
 $(OBJ)/random.o: $(SRC)/random.cpp 
