@@ -11,7 +11,7 @@ class Edge;
 /*
  * Representa una clausula de la CNF
  */
-class Function
+class Clause
 {
 	public:
 		//==========================//
@@ -25,7 +25,7 @@ class Function
 		//==========================//
 		// Declaración de funciones //
 		//==========================//
-		Function(int id);
+		Clause(int id);
 		void satisfy();
 		void addNeighbor(Edge* neigh);
 		vector<Edge*> enabledNeighborhood();

@@ -21,7 +21,7 @@ class Variable
 		//==========================//
 		int id; 
 		lbool value;
-		// Conjunto de nodos vecinos (nodos función)
+		// Conjunto de nodos vecinos (nodos cláusula)
 		// se identifican por su arista
 		vector<Edge*> neighborhood;
 		// Subconjunto de nodos del vecindario en los que 

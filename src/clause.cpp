@@ -1,19 +1,19 @@
-#include "function.h"
+#include "clause.h"
 #include "edge.h"
 #include "variable.h"
 
-Function::Function(int id){
+Clause::Clause(int id){
 	this->id = id;
 	this->enabled_edges = 0;
 	this->satisfied = false;
 }
 
-void Function::addNeighbor(Edge* neigh){
+void Clause::addNeighbor(Edge* neigh){
 	this->neighborhood.push_back(neigh);
 	enabled_edges++;
 }
 
-void Function::satisfy(){
+void Clause::satisfy(){
 	satisfied = true;
 
 	for(Edge* e : neighborhood)
@@ -21,7 +21,7 @@ void Function::satisfy(){
 			e->Dissable();
 }
 
-vector<Edge*> Function::enabledNeighborhood(){
+vector<Edge*> Clause::enabledNeighborhood(){
 	vector<Edge*> enabled_neigh;
 	for(Edge* n : neighborhood)
 		if(n->enabled)

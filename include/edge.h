@@ -5,7 +5,7 @@
 #include <vector>
 
 class Variable;
-class Function;
+class Clause;
 
 class Edge
 {
@@ -16,7 +16,7 @@ class Edge
 		// Declaración de variables //
 		//==========================//
 		Variable* variable;
-		Function* function;
+		Clause* clause;
 
 		bool negated;
 		double survey;
@@ -26,7 +26,7 @@ class Edge
 		//==========================//
 		// Declaración de funciones //
 		//==========================//
-		Edge(Variable* variable, Function* function, bool negated);
+		Edge(Variable* variable, Clause* clause, bool negated);
 		void calculateProducts();
 		inline void Dissable(){enabled = false;}
 		void initRandomSurvey();

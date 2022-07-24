@@ -7,7 +7,7 @@
 
 #include "graph.h"
 #include "variable.h"
-#include "function.h"
+#include "clause.h"
 #include "edge.h"
 
 
@@ -44,14 +44,14 @@ Graph::Graph(string file){
 	this->unassigned_vars = n;
 	// reservamos espacio para las variables, clausulas y aristas
 	this->variables.reserve(n);
-	this->functions.reserve(m);
+	this->clauses.reserve(m);
 	this->edges.reserve(m * k);
 
 	// inicializamos las variables y cláusulas
 	// rellenando el vector de variables de 1 a n
 	// y el de clausulas de 0 a m
 	initVariables(n);
-	initFunctions(m);
+	initClauses(m);
 
 	// Pasamos a leer las clausulas
 	for(int i = 0; i < m; ++i){
@@ -64,7 +64,7 @@ Graph::Graph(string file){
 			
 			if(var != 0){
 				int var_pos = abs(var) - 1;
-				addEdge(variables[var_pos], functions[i], neg);
+				addEdge(variables[var_pos], clauses[i], neg);
 			}
 		} while(var != 0);
 	}
@@ -72,12 +72,12 @@ Graph::Graph(string file){
 	ifs.close();
 
 	//cout << "Número de nodos variable: " << variables.size() << endl
-	//	 << "Número de nodos cláusula: " << functions.size()  << endl
+	//	 << "Número de nodos cláusula: " << clauses.size()  << endl
 	//	 << "Número de aristas:        " << edges.size() << endl;
 }
 
 //----------------------------------------------//
-void Graph::addEdge(Variable* var, Function* func, bool neg){
+void Graph::addEdge(Variable* var, Clause* func, bool neg){
 	Edge* e = new Edge(var, func, neg);
 	edges.push_back(e);
 	var->addNeighbor(e);
@@ -103,12 +103,12 @@ vector<Edge*> Graph::enabledEdges(){
 }
 
 //----------------------------------------------//
-vector<Function*> Graph::unsatisfiedFunctions(){
-	vector<Function*> enabled_functions;
-	for(Function* f : functions)
-		if(!f->satisfied)
-			enabled_functions.push_back(f);
-	return enabled_functions;
+vector<Clause*> Graph::unsatisfiedClauses(){
+	vector<Clause*> enabled_clauses;
+	for(Clause* c : clauses)
+		if(!c->satisfied)
+			enabled_clauses.push_back(c);
+	return enabled_clauses;
 }
 //----------------------------------------------//
 void Graph::assignVar(Variable* var, int val){
@@ -129,15 +129,15 @@ void Graph::initVariables(int n_variables){
 }
 
 //----------------------------------------------//
-void Graph::initFunctions(int n_functions){
-	for(int i = 0; i < n_functions; ++i){
-		this->functions.push_back(new Function(i));
+void Graph::initClauses(int n_clauses){
+	for(int i = 0; i < n_clauses; ++i){
+		this->clauses.push_back(new Clause(i));
 	}
 }
 
 //----------------------------------------------//
 Graph::~Graph() {
-  for (Function* clause : functions) delete clause;
+  for (Clause* clause : clauses) delete clause;
   for (Variable* variable : variables) delete variable;
   for (Edge* edge : edges) delete edge;
 }

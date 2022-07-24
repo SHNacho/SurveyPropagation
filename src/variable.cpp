@@ -1,5 +1,5 @@
 #include "variable.h"
-#include "function.h"
+#include "clause.h"
 #include "edge.h"
 
 

@@ -19,16 +19,16 @@ class SolverSP{
 
 	public:
 		int totalIt;
-		const double ZERO = 0.0000000001;
+		const double ZERO = 10e-10;
 
 		SolverSP();
 
 		result SID(Graph* graph, int t_max, float precision, float f);
 		result surveyPropagation(Graph* grafo, int t_max, float precision);	
-		double SP_UPDATE(Function* clause);
+		double SP_UPDATE(Clause* clause);
 		void calculateProducts();
 		bool clean(Variable* var);
-		bool unitPropagation(Function* clause);
+		bool unitPropagation(Clause* clause);
 		void computeBias(Variable* var);
 		bool assignVariable(Variable* var, lbool value);
 		/**

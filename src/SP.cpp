@@ -95,12 +95,12 @@ result SolverSP::surveyPropagation(Graph* graph, int t_max, float precision){
   	computeSubProducts(graph);
   	for (int i = 0; i < t_max; i++) {
 
-  	  	vector<Function*> unsatisfiedClauses = graph->unsatisfiedFunctions();
+  	  	vector<Clause*> unsatisfiedClauses = graph->unsatisfiedClauses();
   	  	shuffle(unsatisfiedClauses.begin(), unsatisfiedClauses.end(), rng);
 
   	  	// Calculamos los surveys
   	  	double maxConvergeDiff = 0.0;
-  	  	for (Function* clause : unsatisfiedClauses) {
+  	  	for (Clause* clause : unsatisfiedClauses) {
   	  	  	double maxConvDiffInClause = SP_UPDATE(clause);
 
   	  	  	// Guardamos la mayor convergencia
@@ -152,7 +152,7 @@ void SolverSP::computeSubProducts(Graph* graph){
 	}
 }
 
-double SolverSP::SP_UPDATE(Function* clause){
+double SolverSP::SP_UPDATE(Clause* clause){
 	double maxConvDiffClause = 0.0;
 	int zeros = 0;
 	double allSubSurveys = 1.0;
@@ -314,11 +314,11 @@ bool SolverSP::clean(Variable* var){
 			if((edge->negated && var->value == False)
 				||
 			   (!edge->negated && var->value == True)){
-				edge->function->satisfy();
+				edge->clause->satisfy();
 			}
 			else{
 				edge->Dissable();
-				if(!unitPropagation(edge->function)){
+				if(!unitPropagation(edge->clause)){
 					// cout << "Error UP" << endl;
 					return false;
 				}
@@ -330,16 +330,16 @@ bool SolverSP::clean(Variable* var){
 }
 
 
-bool SolverSP::unitPropagation(Function* function){
+bool SolverSP::unitPropagation(Clause* clause){
 	bool ok = true;
 
-	if(function->satisfied) return ok;
+	if(clause->satisfied) return ok;
 	
-	vector<Edge*> edges = function->enabledNeighborhood();
+	vector<Edge*> edges = clause->enabledNeighborhood();
 
 	int n_enabled = 0;
 
-	for(Edge* e : function->neighborhood){
+	for(Edge* e : clause->neighborhood){
 		if(e->enabled)
 			n_enabled++;
 	}

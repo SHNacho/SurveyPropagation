@@ -2,8 +2,8 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -12,15 +12,15 @@
       "-o",
       "obj/main.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/main.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/main.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/main.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/main.o"
   },
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -29,15 +29,15 @@
       "-o",
       "obj/variable.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/variable.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/variable.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/variable.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/variable.o"
   },
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -46,15 +46,15 @@
       "-o",
       "obj/function.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/function.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/function.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/function.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/function.o"
   },
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -63,15 +63,15 @@
       "-o",
       "obj/edge.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/edge.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/edge.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/edge.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/edge.o"
   },
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -80,15 +80,15 @@
       "-o",
       "obj/graph.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/graph.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/graph.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/graph.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/graph.o"
   },
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -97,15 +97,15 @@
       "-o",
       "obj/SP.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/SP.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/SP.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/SP.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/SP.o"
   },
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
-      "-O2",
-      "-fopenmp",
+      "-Wall",
+      "-g",
       "-std=c++1z",
       "-g",
       "-I./include",
@@ -114,8 +114,8 @@
       "-o",
       "obj/random.o"
     ],
-    "directory": "/home/nacho/Proyectos/SurveyPropagation",
-    "file": "/home/nacho/Proyectos/SurveyPropagation/src/random.cpp",
-    "output": "/home/nacho/Proyectos/SurveyPropagation/obj/random.o"
+    "directory": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation",
+    "file": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/src/random.cpp",
+    "output": "/home/nacho/Insync/e.nachosanchezh@ms.ugr.es/OneDrive/TFG_Informática/SurveyPropagation/obj/random.o"
   }
 ]

@@ -8,7 +8,7 @@
 #include <string>
 #include "variable.h"
 #include "edge.h"
-#include "function.h"
+#include "clause.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ class Graph
 		//==========================//
 		vector<Edge*> edges;
 		vector<Variable*> variables;
-		vector<Function*> functions;
+		vector<Clause*> clauses;
 
 		int unassigned_vars;
 
@@ -43,11 +43,11 @@ class Graph
 		/**
 		 * Devuelve las cláusulas que aún no han sido satisfechas
 		 **/
-		vector<Function*> unsatisfiedFunctions();		
+		vector<Clause*> unsatisfiedClauses();		
 		/**
 		 * Añade una arista al grafo
 		 **/
-		void addEdge(Variable* var, Function* func, bool neg);
+		void addEdge(Variable* var, Clause* clauses, bool neg);
 		/**
 		 * Dada una variable, la cual ha sido fijada a un valor
 		 * concreto, elimina del grafo todas las aristas que
@@ -73,7 +73,7 @@ class Graph
 		/**
 		 * Inicializa el vector de cláusulas
 		 **/
-		void initFunctions(int n_functions);
+		void initClauses(int n_clauses);
 };
 
 # endif //GRAPH_H
