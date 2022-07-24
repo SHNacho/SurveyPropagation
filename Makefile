@@ -5,7 +5,7 @@ OBJ=./obj
 
 OPT=-Wall -g -std=c++1z #-O2 -fopenmp
 
-build: $(BIN)/main_exe 
+build: create_dirs $(BIN)/main_exe 
 
 all: clean build
 
@@ -32,6 +32,9 @@ $(OBJ)/variable.o: $(SRC)/variable.cpp $(INC)/clause.h $(INC)/edge.h
 
 $(OBJ)/random.o: $(SRC)/random.cpp 
 	g++ $(OPT) -g  -I$(INC) -c $< -o $@ 
+
+create_dirs:
+	mkdir -p $(OBJ) $(BIN) ./data
 
 clean:
 	rm -rf $(BIN)/* $(OBJ)/*
